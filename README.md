@@ -3,6 +3,15 @@
 Run your script without cloudflare workers.
 
 
+### Usage
+
+```shell
+yarn add https://github.com/TBXark/cloudflare-worker-adapter.git
+```
+
+### Example
+
+##### Demo
 ```js
 import { bindGlobal, startServer, MemoryCache  } from 'cloudflare-worker-adapter';
 
@@ -17,3 +26,6 @@ addEventListener('fetch', (event) => {
 
 startServer();
 ```
+
+##### proxy-render example
+https://github.com/TBXark/proxy-render/tree/master/example/server
