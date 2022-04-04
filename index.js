@@ -1,4 +1,4 @@
-import {Command} from 'commander';
+import {Command, Option} from 'commander';
 import http from 'http';
 import fetch, {Request, Response} from 'node-fetch';
 import EventEmitter from 'events';
@@ -23,32 +23,23 @@ async function mergeNodeFecthResponseIntoOutcome(nodeFecthResponse, outcome) {
   outcome.end(res);
 }
 
-function stringToNumber(str, defaultValue) {
-  const num = parseInt(str, 10);
-  if (isNaN(num)) {
-    return defaultValue;
-  }
-  return num;
+function isPromise(obj) {
+  return (
+    !!obj &&
+    (typeof obj === 'object' || typeof obj === 'function') &&
+    typeof obj.then === 'function'
+  );
 }
 
 export function startServer(port) {
   const host = `http://localhost`;
 
   if (port === undefined || port === null) {
-    const program = new Command();
-    program
-        .option('-p, --port <number>', 'Port to listen on', '3000')
-        .parse(process.argv);
-    const options = program.opts();
-    port = stringToNumber(options.port, 3000);
-  }
-
-  function isPromise(obj) {
-    return (
-      !!obj &&
-      (typeof obj === 'object' || typeof obj === 'function') &&
-      typeof obj.then === 'function'
-    );
+    port = new Command()
+        .addOption(new Option('-p, --port <port>', 'Port to listen on', '3000').argParser(parseInt).default(3000)) // eslint-disable-line max-len
+        .parse(process.argv)
+        .opts()
+        .port;
   }
 
   const server = http
