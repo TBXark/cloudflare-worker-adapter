@@ -1,13 +1,17 @@
 import {Command, Option} from 'commander';
 import http from 'http';
-import fetch, {Request, Response} from 'node-fetch';
+import fetch, {Request, Response, Headers} from 'node-fetch';
 import EventEmitter from 'events';
+import {TextEncoder} from 'util';
+
 
 const globalEventEmitter = new EventEmitter();
 
 global.fetch = fetch;
 global.Request = Request;
 global.Response = Response;
+global.Headers = Headers;
+global.TextEncoder = TextEncoder;
 global.addEventListener =
   globalEventEmitter.addListener.bind(globalEventEmitter);
 
