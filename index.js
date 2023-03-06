@@ -16,8 +16,8 @@ global.addEventListener =
   globalEventEmitter.addListener.bind(globalEventEmitter);
 
 function convertIncomeToNodeFecthRequest(income, host) {
-  const {url, method, headers, body} = income;
-  return new Request(`${host}${url}`, {method, headers, body});
+  const {url, method, headers} = income;
+  return new Request(`${host}${url}`, {method, headers, income});
 }
 
 async function mergeNodeFecthResponseIntoOutcome(nodeFecthResponse, outcome) {
