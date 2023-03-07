@@ -1,4 +1,4 @@
-import {Command, Option} from 'commander';
+// import {Command, Option} from 'commander';
 import http from 'http';
 import fetch, {Request, Response, Headers} from 'node-fetch';
 import EventEmitter from 'events';
@@ -38,14 +38,14 @@ function isPromise(obj) {
 
 export function startServer(port, host) {
 
-  const opts = new Command()
-    .addOption(new Option('-h, --host <host>', 'Host to listen on', 'localhost').default('localhost')) // eslint-disable-line max-len
-    .addOption(new Option('-p, --port <port>', 'Port to listen on', '3000').argParser(parseInt).default(3000)) // eslint-disable-line max-len
-    .parse(process.argv)
-    .opts()
+  // const opts = new Command()
+  //   .addOption(new Option('-h, --host <host>', 'Host to listen on', 'localhost').default('localhost')) // eslint-disable-line max-len
+  //   .addOption(new Option('-p, --port <port>', 'Port to listen on', '3000').argParser(parseInt).default(3000)) // eslint-disable-line max-len
+  //   .parse(process.argv)
+  //   .opts()
   
-  port = opts.port || port;
-  host = opts.host || 'localhost';
+  // port = opts.port || port;
+  // host = opts.host || 'localhost';
 
   const server = http
       .createServer((req, res) => {
