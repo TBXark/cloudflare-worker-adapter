@@ -17,7 +17,8 @@ global.addEventListener =
 
 function convertIncomeToNodeFecthRequest(income, host) {
   const {url, method, headers} = income;
-  return new Request(`${host}${url}`, {method, headers, income});
+  const body =  method === 'POST' ? income : undefined;
+  return new Request(`${host}${url}`, {method, headers, body});
 }
 
 async function mergeNodeFecthResponseIntoOutcome(nodeFecthResponse, outcome) {
@@ -35,16 +36,16 @@ function isPromise(obj) {
   );
 }
 
-export function startServer(port) {
-  const host = `http://localhost`;
+export function startServer(port, host) {
 
-  if (port === undefined || port === null) {
-    port = new Command()
-        .addOption(new Option('-p, --port <port>', 'Port to listen on', '3000').argParser(parseInt).default(3000)) // eslint-disable-line max-len
-        .parse(process.argv)
-        .opts()
-        .port;
-  }
+  const opts = new Command()
+    .addOption(new Option('-h, --host <host>', 'Host to listen on', 'localhost').default('localhost')) // eslint-disable-line max-len
+    .addOption(new Option('-p, --port <port>', 'Port to listen on', '3000').argParser(parseInt).default(3000)) // eslint-disable-line max-len
+    .parse(process.argv)
+    .opts()
+  
+  port = opts.port || port;
+  host = opts.host || 'localhost';
 
   const server = http
       .createServer((req, res) => {
@@ -62,7 +63,7 @@ export function startServer(port) {
         };
         globalEventEmitter.emit('fetch', event);
       })
-      .listen(port);
+      .listen(port, host);
 
   console.log(`Server running at ${host}:${port}/`);
   return server;
