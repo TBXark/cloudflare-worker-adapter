@@ -1,8 +1,11 @@
 export default {
     async fetch(request, env) {
-        const DATABASE = env.DATABASE;
         const TOKEN = env.TOKEN;
-        const key = new URL(request.url).searchParams.get('key');
+        const params = new URL(request.url).searchParams
+        const key = params.get('key');
+        const db = params.get('db');
+
+        const DATABASE = env[db];
 
         if (request.headers.get('Authorization') !== `Bearer ${TOKEN}`) {
             return new Response('Unauthorized', {status: 401});
