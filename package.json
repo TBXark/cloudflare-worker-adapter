@@ -16,7 +16,8 @@
     "toml": "^3.0.0"
   },
   "files": [
-    "index.js"
+    "index.js",
+    "cache/**/*.js"
   ],
   "devDependencies": {
     "eslint": "^8.12.0",
