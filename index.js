@@ -39,7 +39,8 @@ export default {
     }
     const app = new koa();
     app.use(async (ctx) => {
-      const request = new Request(ctx.request.url, {
+      const url = new URL(`http://localhost${ctx.request.url}`);
+      const request = new Request(url, {
         method: ctx.request.method,
         headers: ctx.request.headers,
         body: ctx.request.body,
@@ -47,7 +48,9 @@ export default {
       const response = await handler(request, env);
       ctx.status = response.status;
       ctx.body = response.body;
-      ctx.set(response.headers);
+      for (const [key, value] of response.headers) {
+        ctx.set(key, value);
+      }
     })
     app.listen(port, host);
    }
