@@ -11,8 +11,9 @@
   "author": "TBXark",
   "license": "MIT",
   "dependencies": {
-    "commander": "^9.1.0",
-    "node-fetch": "^3.2.3"
+    "koa": "^2.13.4",
+    "node-fetch": "^3.2.3",
+    "toml": "^3.0.0"
   },
   "files": [
     "index.js"
