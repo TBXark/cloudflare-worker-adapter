@@ -12,7 +12,7 @@ export class MemoryCache {
         return JSON.parse(raw);
       case 'arrayBuffer':
         return raw.buffer.slice(raw.byteOffset, raw.byteOffset + raw.byteLength);
-    default:
+      default:
         return raw;
     }
   }
