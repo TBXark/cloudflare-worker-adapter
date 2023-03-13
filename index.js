@@ -1,10 +1,19 @@
 import fetch, {Request, Response, Headers} from 'node-fetch';
+import HttpProxyAgent from 'http-proxy-agent';
 import {TextEncoder} from 'util';
 import koa from 'koa';
+import logger from 'koa-logger';
 import toml from 'toml';
 import fs from 'fs';
 
-global.fetch = fetch;
+global.fetch = async (url, init) => {
+  const proxy = process.env.http_proxy || process.env.HTTP_PROXY;
+  const agent = proxy ? new HttpProxyAgent(proxy) : undefined;
+  return await fetch(url, {
+    ...init,
+    agent,
+  });
+};
 global.Request = Request;
 global.Response = Response;
 global.Headers = Headers;
@@ -38,6 +47,7 @@ export default {
       }
     }
     const app = new koa();
+    app.use(logger());
     app.use(async (ctx) => {
       const url = new URL(`http://localhost${ctx.request.url}`);
       const request = new Request(url, {
