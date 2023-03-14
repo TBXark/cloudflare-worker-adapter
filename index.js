@@ -58,11 +58,14 @@ export default {
  * @param {function} handler
  */
   startServer(port, host, config, database, setting, handler) {
+    port = port || 3000;
+    host = host || 'localhost';
     const env = inirEnv(config, database);
     const bodyMethods = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
+    const urlPrefix = setting?.server || `http://${host}`;
     const server = http.createServer(async (req, res) => {
-      console.log(`${req.method}: ${req.url}`);
-      const url = setting.server + req.url;
+      console.log(`\x1b[31m${req.method}\x1b[0m: ${req.url}`);
+      const url = urlPrefix + req.url;
       const method = req.method;
       const headers = req.headers;
       const body = bodyMethods.has(method) ? req : null;
@@ -82,7 +85,7 @@ export default {
     });
     server.timeout = 30000;
     server.listen(port || 3000, host || 'localhost', () => {
-      console.log(`Server listening on port ${port || 3000}`);
+      console.log(`Server listening on  http://${host}:${port || 3000}`);
     });
   }
   
