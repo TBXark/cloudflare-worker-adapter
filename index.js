@@ -52,7 +52,7 @@ export default {
       const url = setting.server + req.url;
       const method = req.method;
       const headers = req.headers;
-      const body = req.method === 'POST' ? req : undefined;
+      const body = req.method !== 'POST' ? req : undefined;
       const fetchReq = new Request(url, {method, headers, body});
       try {
         const fetchRes = await handler(fetchReq, env);
