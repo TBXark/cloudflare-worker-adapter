@@ -47,12 +47,14 @@ export default {
         ...database,
       };
     }
+
+    const bodyMethods = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
     const server = http.createServer(async (req, res) => {
       console.log(`${req.method}: ${req.url}`);
       const url = setting.server + req.url;
       const method = req.method;
       const headers = req.headers;
-      const body = req.method !== 'POST' ? req : undefined;
+      const body = bodyMethods.has(method) ? req : null;
       const fetchReq = new Request(url, {method, headers, body});
       try {
         const fetchRes = await handler(fetchReq, env);
