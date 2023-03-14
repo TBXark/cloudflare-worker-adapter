@@ -4,8 +4,7 @@
 
 可以使用vscode断点调试，加上`nodemon`可以实现热更新。
 
-
-![demo](https://user-images.githubusercontent.com/9513891/224905348-90cc2c2b-9fa6-4229-b5fc-32395e775973.jpg)
+<img width="600" alt="image" src="https://user-images.githubusercontent.com/9513891/224906690-d9692649-ab5a-4c5a-98e2-49dc122d611a.png">
 
 
 ### Usage
