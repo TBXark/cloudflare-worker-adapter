@@ -20,6 +20,32 @@ export function bindGlobal(target) {
   });
 }
 
+function inirEnv(config, database) {
+  let env = {};
+  if (database) {
+    env = {
+      ...env,
+      ...database,
+    };
+  }
+  if (config) {
+    const raw = fs.readFileSync(config);
+    const tomlFile = toml.parse(raw);
+    console.log(JSON.stringify(tomlFile.vars, null, 2));
+    env = {
+      ...env,
+      ...tomlFile.vars,
+    };
+    for (const key in (env.kv_namespaces || [])) {
+      if (!env[key]) {
+        console.log(`Database ${key} is not defined. Use MemoryCache.`);
+        env[key] = new MemoryCache();
+      }
+    }
+  }
+  return env
+}
+
 export default {
   /**
  * Create a server for local development
@@ -32,22 +58,7 @@ export default {
  * @param {function} handler
  */
   startServer(port, host, config, database, setting, handler) {
-    let env = {};
-    if (config) {
-      const raw = fs.readFileSync(config);
-      const tomlFile = toml.parse(raw);
-      env = {
-        ...env,
-        ...tomlFile.vars,
-      };
-    }
-    console.log(JSON.stringify(env, null, 2));
-    if (database) {
-      env = {
-        ...env,
-        ...database,
-      };
-    }
+    const env = inirEnv(config, database);
     const bodyMethods = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
     const server = http.createServer(async (req, res) => {
       console.log(`${req.method}: ${req.url}`);
@@ -73,5 +84,6 @@ export default {
     server.listen(port || 3000, host || 'localhost', () => {
       console.log(`Server listening on port ${port || 3000}`);
     });
-  },
+  }
+  
 };
