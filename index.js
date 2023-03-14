@@ -38,16 +38,16 @@ export default {
       const tomlFile = toml.parse(raw);
       env = {
         ...env,
-        ...tomlFile,
+        ...tomlFile.vars,
       };
     }
+    console.log(JSON.stringify(env, null, 2));
     if (database) {
       env = {
         ...env,
         ...database,
       };
     }
-
     const bodyMethods = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
     const server = http.createServer(async (req, res) => {
       console.log(`${req.method}: ${req.url}`);
@@ -58,7 +58,6 @@ export default {
       const fetchReq = new Request(url, {method, headers, body});
       try {
         const fetchRes = await handler(fetchReq, env);
-        console.log(fetchRes);
         res.statusCode = fetchRes.status;
         res.statusMessage = fetchRes.statusText;
         res.headers = fetchRes.headers;
