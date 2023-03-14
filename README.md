@@ -20,28 +20,32 @@ https://github.com/TBXark/ChatGPT-Telegram-Workers
 ```js
 import adapter, { bindGlobal } from 'cloudflare-worker-adapter'
 import worker from '../main.js'
-import { LocalCache } from 'cloudflare-worker-adapter/cache/local.js'
+import { SqliteCache } from 'cloudflare-worker-adapter/cache/sqlite.js'
 import fs from 'fs'
 import HttpsProxyAgent from 'https-proxy-agent'
 import fetch from 'node-fetch'
 
-const agent = new HttpsProxyAgent('http://127.0.0.1:8888')
-const proxyFetch = async (url, init) => {
-    return fetch(url, {agent, ...init})
-}
-bindGlobal({ 
-    fetch: proxyFetch
-})
 
 const config = JSON.parse(fs.readFileSync('./config.json', 'utf-8'))
-const cache = new LocalCache(config.database)
+const cache = new SqliteCache(config.database)
 
-adapter.startServer(config.port, config.host, '../wrangler.toml', {DATABASE: cache}, {server: config.server}, worker.fetch)
+const proxy = config.https_proxy || process.env.https_proxy || process.env.HTTPS_PROXY
+if (proxy) {
+    console.log(`https proxy: ${proxy}`)
+    const agent = new HttpsProxyAgent(proxy)
+    const proxyFetch = async (url, init) => {
+        return fetch(url, {agent, ...init})
+    }
+    bindGlobal({ 
+        fetch: proxyFetch
+    })
+}
 
+adapter.startServer(config.port, config.host, config.toml, {DATABASE: cache}, {server: config.server}, worker.fetch)
 ```
 
 ### Best Practice
 
-使用内网穿透工具，将本地调试的端口映射到外网，这样就可以正常的交互了。
+如果你有在公网被调用的需求，使用内网穿透工具，将本地调试的端口映射到外网，这样就可以正常的交互了。
 
 这里只对KV进行了基本的实现，如果你的项目中遇到的没有实现的类或者方法。可以自行实现之后使用`bindGlobal`进行绑定。同时欢迎把你的实现提交到这个项目中。
