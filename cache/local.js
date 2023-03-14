@@ -8,7 +8,7 @@ export class LocalCache {
     }
     async get(key, info) {
       const raw = this.cache[key];
-      switch (info.type) {
+      switch (info.type || 'string') {
         case 'string':
           return raw;
         case 'json':

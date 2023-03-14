@@ -15,7 +15,7 @@ export class RemoteCache {
       },
     });
     const raw = await resp.text();
-    switch (info.type) {
+    switch (info.type || 'string') {
       case 'string':
         return raw;
       case 'json':
