@@ -16,7 +16,7 @@ export class SqliteCache {
             this.delete(key);
             resolve(null);
           } else {
-            switch (inf?o.type || 'string') {
+            switch (info?.type || 'string') {
               case 'string':
                 resolve(row?.value);
                 break;
