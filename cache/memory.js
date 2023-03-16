@@ -5,7 +5,7 @@ export class MemoryCache {
   }
   async get(key, info) {
     const raw = this.cache[key];
-    switch (info.type || 'string') {
+    switch (info?.type || 'string') {
       case 'string':
         return raw;
       case 'json':

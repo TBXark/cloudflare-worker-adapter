@@ -43,7 +43,7 @@ function inirEnv(config, database) {
       }
     }
   }
-  return env
+  return env;
 }
 
 export default {
@@ -87,6 +87,6 @@ export default {
     server.listen(port || 3000, host || 'localhost', () => {
       console.log(`Server listening on  http://${host}:${port || 3000}`);
     });
-  }
-  
+  },
+
 };
