@@ -47,6 +47,8 @@ function inirEnv(config, database) {
 }
 
 export default {
+
+  
   /**
  * Create a server for local development
  *
@@ -61,6 +63,18 @@ export default {
     port = port || 3000;
     host = host || 'localhost';
     const env = inirEnv(config, database);
+    this.startServerV2(port, host, env, setting, handler);
+  },
+
+  /**
+   * 
+   * @param {number} port 
+   * @param {string} host 
+   * @param {object} env 
+   * @param {object} setting 
+   * @param {function} handler 
+   */
+  startServerV2(port, host, env, setting, handler) {
     const bodyMethods = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
     const urlPrefix = setting?.server || `http://${host}`;
     const server = http.createServer(async (req, res) => {
@@ -88,5 +102,4 @@ export default {
       console.log(`Server listening on  http://${host}:${port || 3000}`);
     });
   },
-
 };
