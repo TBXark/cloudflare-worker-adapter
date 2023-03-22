@@ -77,7 +77,7 @@ export default {
     port = port || 3000;
     host = host || 'localhost';
     const env = inirEnv(config, database);
-    this.startServerV2(port, host, env, setting, handler, defaultRequestBuilder);
+    this.startServerV2(port, host, env, setting, defaultRequestBuilder, handler);
   },
 
   /**
@@ -89,7 +89,7 @@ export default {
    * @param {function} handler
    * @param {function} handler 
    */
-  startServerV2(port, host, env, setting, handler, requestBuilder) {
+  startServerV2(port, host, env, setting, requestBuilder， handler) {
     const bodyMethods = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
     const baseURL = setting?.server || `http://${host}`;
     const server = http.createServer(async (req, res) => {
