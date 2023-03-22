@@ -1,7 +1,7 @@
 /* eslint-disable require-jsdoc */
 import Redis from 'ioredis';
 
-export default class RedisCache {
+export class RedisCache {
   constructor(url) {
     this.redis = new Redis(url);
   }
