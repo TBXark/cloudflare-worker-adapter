@@ -46,6 +46,7 @@ function inirEnv(config, database) {
   return env;
 }
 
+const bodyMethods = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 /**
  * 
  * @param {string} baseURL 
@@ -90,7 +91,6 @@ export default {
    * @param {function} handler 
    */
   startServerV2(port, host, env, setting, requestBuilder, handler) {
-    const bodyMethods = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
     const baseURL = setting?.server || `http://${host}`;
     const server = http.createServer(async (req, res) => {
       console.log(`\x1b[31m${req.method}\x1b[0m: ${req.url}`);
