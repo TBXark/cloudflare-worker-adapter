@@ -89,7 +89,7 @@ export default {
    * @param {function} handler
    * @param {function} handler 
    */
-  startServerV2(port, host, env, setting, requestBuilder， handler) {
+  startServerV2(port, host, env, setting, requestBuilder, handler) {
     const bodyMethods = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
     const baseURL = setting?.server || `http://${host}`;
     const server = http.createServer(async (req, res) => {
