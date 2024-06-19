@@ -12,17 +12,21 @@ export default {
     }
 
     switch (request.method) {
-      case 'GET':
+      case 'GET': {
         return new Response(await DATABASE.get(key, {type: 'string'}));
-      case 'PUT':
+      }
+      case 'PUT': {
         const {value, info} = await request.json();
         await DATABASE.put(key, value, info);
         return new Response('OK');
-      case 'DELETE':
+      }
+      case 'DELETE': {
         await DATABASE.delete(key);
         return new Response('OK');
-      default:
+      }
+      default: {
         return new Response('Method not allowed', {status: 405});
+      }
     }
   },
 };

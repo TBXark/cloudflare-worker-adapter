@@ -21,10 +21,10 @@ export class SqliteCache {
                 resolve(row?.value);
                 break;
               case 'json':
-                resolve(JSON.parse(raw.value));
+                resolve(JSON.parse(row?.value));
                 break;
               case 'arrayBuffer':
-                resolve(new Uint8Array(raw).buffer);
+                resolve(new Uint8Array(row).buffer);
                 break;
               default:
                 resolve(row?.value);

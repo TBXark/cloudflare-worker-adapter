@@ -3,6 +3,7 @@ import {TextEncoder} from 'util';
 import toml from 'toml';
 import fs from 'fs';
 import http from 'http';
+import {MemoryCache} from './cache/memory.js';
 
 global.fetch = fetch;
 global.Request = Request;

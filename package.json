@@ -1,0 +1,27 @@
+{
+  "name": "cloudflare-worker-adapter",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:TBXark/cloudflare-worker-adapter.git",
+  "author": "tbxark <tbxark@outlook.com>",
+  "license": "MIT",
+  "type": "module",
+  "files": [
+    "index.js",
+    "cache/*"
+  ],
+  "scripts": {
+    "lint": "eslint --fix . workers cache"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.5.0",
+    "eslint": "9.x",
+    "globals": "^15.6.0"
+  },
+  "dependencies": {
+    "ioredis": "^5.4.1",
+    "node-fetch": "^3.3.2",
+    "sqlite3": "^5.1.7",
+    "toml": "^3.0.0"
+  }
+}

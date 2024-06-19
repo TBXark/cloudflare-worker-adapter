@@ -8,7 +8,7 @@ export class RemoteCache {
   }
 
   async get(key, info) {
-    const resp = await fetch(this.url + `?db=${db}&key=${key}`, {
+    const resp = await fetch(this.url + `?db=${this.db}&key=${key}`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${this.token}`,
@@ -28,7 +28,7 @@ export class RemoteCache {
   }
 
   async put(key, value, info) {
-    await fetch(this.url + `?db=${db}&key=${key}`, {
+    await fetch(this.url + `?db=${this.db}&key=${key}`, {
       method: 'PUT',
       headers: {
         Authorization: `Bearer ${this.token}`,
@@ -41,7 +41,7 @@ export class RemoteCache {
   }
 
   async delete(key) {
-    await fetch(this.url + `?db=${db}&key=${key}`, {
+    await fetch(this.url + `?db=${this.db}&key=${key}`, {
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${this.token}`,

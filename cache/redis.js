@@ -1,4 +1,3 @@
-/* eslint-disable require-jsdoc */
 import Redis from 'ioredis';
 
 export class RedisCache {
