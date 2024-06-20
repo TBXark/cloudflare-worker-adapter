@@ -10,7 +10,7 @@
 ### Usage
 
 ```shell
-yarn add https://github.com/TBXark/cloudflare-worker-adapter.git
+npm i cloudflare-worker-adapter
 ```
 
 ### Example
