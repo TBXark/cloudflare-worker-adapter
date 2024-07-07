@@ -4,6 +4,7 @@ export class LocalCache {
   constructor(path) {
     this.cache = {};
     this.path = path;
+    this.readFromDisk();
   }
   async get(key, info) {
     const raw = this.cache[key];
@@ -46,7 +47,7 @@ export class LocalCache {
   }
 
   readFromDisk() {
-    if (fs.existsSync(this.path) === false) {
+    if (fs.existsSync(this.path) === true) {
       const data = fs.readFileSync(this.path, 'utf8');
       this.cache = JSON.parse(data);
     }
