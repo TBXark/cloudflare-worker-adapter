@@ -75,10 +75,15 @@ export default {
  * @param {object} setting - { server: 'https://example.com' }
  * @param {function} handler
  */
-  startServer(port, host, config, database, setting, handler) {
+  startServer(port, host, config, database, setting, handler, injection) {
     port = port || 3000;
     host = host || 'localhost';
     const env = inirEnv(config, database);
+    if (typeof injection === 'object') {
+      for (const [key,value] of Object.entries(injection)){
+        env[key] = value;
+      }
+    }
     this.startServerV2(port, host, env, setting, defaultRequestBuilder, handler);
   },
 
