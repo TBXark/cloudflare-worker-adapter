@@ -5,12 +5,9 @@ import fs from 'fs';
 import http from 'http';
 import {MemoryCache} from './cache/memory.js';
 
-global.fetch = fetch;
-global.Request = Request;
-global.Response = Response;
-global.Headers = Headers;
-global.TextEncoder = TextEncoder;
-
+/**
+ * @param {object}  target
+ */
 export function bindGlobal(target) {
   Object.keys(target).forEach((key) => {
     if (typeof target[key] === 'function') {
@@ -21,7 +18,21 @@ export function bindGlobal(target) {
   });
 }
 
-function inirEnv(config, database) {
+bindGlobal({
+  fetch,
+  Request,
+  Response,
+  Headers,
+  TextEncoder,
+  MemoryCache,
+});
+
+/**
+ * @param {object} config
+ * @param {object} database
+ * @returns {object}
+ */
+export function initEnv(config, database) {
   let env = {};
   if (database) {
     env = {
@@ -52,7 +63,7 @@ const bodyMethods = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
  * 
  * @param {string} baseURL 
  * @param {Request} req 
- * @return {Request}
+ * @returns {Request}
  */
 export function defaultRequestBuilder(baseURL, req) {
   const url = baseURL + req.url;
@@ -66,19 +77,18 @@ export default {
 
   
   /**
- * Create a server for local development
- *
- * @param {number} port - 3000
- * @param {string} host - 'localhost'
- * @param {string} config - path to wrangler.toml
- * @param {object} database - { DB: new MemoryCache() }
- * @param {object} setting - { server: 'https://example.com' }
- * @param {function} handler
- */
+   * Create a server for local development
+   * @param {number} port - 3000
+   * @param {string} host - 'localhost'
+   * @param {string} config - path to wrangler.toml
+   * @param {object} database - { DB: new MemoryCache() }
+   * @param {object} setting - { server: 'https://example.com' }
+   * @param {Function} handler
+   */
   startServer(port, host, config, database, setting, handler) {
     port = port || 3000;
     host = host || 'localhost';
-    const env = inirEnv(config, database);
+    const env = initEnv(config, database);
     this.startServerV2(port, host, env, setting, defaultRequestBuilder, handler);
   },
 
@@ -88,13 +98,13 @@ export default {
    * @param {string} host 
    * @param {object} env 
    * @param {object} setting 
-   * @param {function} handler
-   * @param {function} handler 
+   * @param {Function} requestBuilder
+   * @param {Function} handler 
    */
   startServerV2(port, host, env, setting, requestBuilder, handler) {
+    const baseURL = setting?.server || `http://${host}`;
     const server = http.createServer(async (req, res) => {
       console.log(`\x1b[31m${req.method}\x1b[0m: ${req.url}`);
-      const baseURL = setting?.server || `http://${req.headers.host}`;
       const fetchReq = (requestBuilder || defaultRequestBuilder)(baseURL, req);
       try {
         const fetchRes = await handler(fetchReq, env);
