@@ -1,6 +1,6 @@
 {
   "name": "cloudflare-worker-adapter",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "index.js",
   "repository": "git@github.com:TBXark/cloudflare-worker-adapter.git",
   "author": "tbxark <tbxark@outlook.com>",
