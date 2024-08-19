@@ -1,5 +1,6 @@
 import * as fs from 'node:fs';
 import * as http from 'node:http';
+import { Buffer } from 'node:buffer';
 import { Readable } from 'node:stream';
 import { parse } from 'toml';
 import { MemoryCache } from './cache/memory.ts';

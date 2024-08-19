@@ -1,4 +1,4 @@
-import antfu, { imports, javascript, jsdoc, node } from '@antfu/eslint-config';
+import antfu, { imports, javascript, node } from '@antfu/eslint-config';
 
 export default antfu(
     {
@@ -12,6 +12,7 @@ export default antfu(
         markdown: false,
         html: true,
         css: true,
+        typescript: true,
         ignores: [
             '.github/**',
             '.idea/**',
@@ -22,17 +23,10 @@ export default antfu(
         ],
     },
     imports,
-    jsdoc,
     javascript,
     node,
     {
         rules: {
-            'jsdoc/no-undefined-types': 'off',
-            'jsdoc/require-returns-description': 'off',
-            'jsdoc/require-property-description': 'off',
-            'jsdoc/require-param-description': 'off',
-            'node/prefer-global/process': 'off',
-            'node/prefer-global/buffer': 'off',
             'eslint-comments/no-unlimited-disable': 'off',
             'padding-line-between-statements': 'off',
             'no-console': 'off',
