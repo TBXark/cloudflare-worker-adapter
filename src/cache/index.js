@@ -9,7 +9,7 @@ import { MemoryCache } from './memory.js';
  * @returns {Promise<MemoryCache|LocalCache|SqliteCache|RedisCache>}
  */
 export async function createCache(type, options) {
-    switch (options?.type) {
+    switch (type) {
         case 'local':
             return new LocalCache(options.uri);
         case 'sqlite':

@@ -1,5 +1,5 @@
 {
-    "include": ["index.js", "cache/*"],
+    "include": ["src/index.js", "src/cache/*"],
     "compilerOptions": {
       "allowJs": true,
       "declaration": true,
