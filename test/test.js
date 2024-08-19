@@ -1,7 +1,7 @@
 // eslint-disable-next-line antfu/no-import-dist
 import { startServer, SQLiteCache } from '../dist/index.js';
 
-const cache = new SQLiteCache('./cache.sqlite');
+const cache = new SQLiteCache('.temp/cache.sqlite');
 
 let counter = 0;
 
