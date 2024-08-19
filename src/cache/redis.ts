@@ -1,3 +1,4 @@
+import { Buffer } from 'node:buffer';
 import type { RedisOptions } from 'ioredis';
 import { Redis } from 'ioredis';
 import type { Cache, CacheInfo, CacheItem, CacheStore } from './cache.ts';

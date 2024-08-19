@@ -3,7 +3,7 @@ import * as http from 'node:http';
 import { Buffer } from 'node:buffer';
 import { Readable } from 'node:stream';
 import { parse } from 'toml';
-import { MemoryCache } from './cache/memory.ts';
+import { MemoryCache } from './cache';
 
 export interface ServerHandler {
     (req: Request, env: object): Promise<Response>;
