@@ -1,4 +1,4 @@
-import antfu, { imports, javascript, node } from '@antfu/eslint-config';
+import antfu, { imports, node } from '@antfu/eslint-config';
 
 export default antfu(
     {
@@ -23,7 +23,6 @@ export default antfu(
         ],
     },
     imports,
-    javascript,
     node,
     {
         rules: {
