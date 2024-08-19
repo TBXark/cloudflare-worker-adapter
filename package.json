@@ -17,7 +17,7 @@
         "dist"
     ],
     "scripts": {
-        "lint": "eslint --fix *.js *.ts src/**/*.ts test",
+        "lint": "eslint --fix *.js *.json src/**/*.ts test",
         "test": "tsx test/test.ts",
         "build": "vite build"
     },
@@ -29,6 +29,7 @@
     },
     "devDependencies": {
         "@antfu/eslint-config": "^2.25.1",
+        "@cloudflare/workers-types": "^4.20240815.0",
         "@rollup/plugin-node-resolve": "^15.2.3",
         "@types/node": "^22.4.1",
         "eslint": "^9.8.0",

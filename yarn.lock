@@ -116,6 +116,11 @@
     picocolors "^1.0.0"
     sisteransi "^1.0.5"
 
+"@cloudflare/workers-types@^4.20240815.0":
+  version "4.20240815.0"
+  resolved "https://registry.yarnpkg.com/@cloudflare/workers-types/-/workers-types-4.20240815.0.tgz#d808f35c6d4ffc15d64e94aee370dd7549a7167d"
+  integrity sha512-H/IXCOahT1lr4RKzsiCkyjM7+LCPLtl2wjxyLG8xMTNERR0XuD1Vcfns6TraE0cd5+IcKe7j3rpzBlSCjZ+61A==
+
 "@dprint/formatter@^0.3.0":
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/@dprint/formatter/-/formatter-0.3.0.tgz#e374398c8e8d7dbf50e8208c87af44a66de0cb2e"
