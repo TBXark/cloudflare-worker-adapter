@@ -7,11 +7,11 @@
     "repository": "git@github.com:TBXark/cloudflare-worker-adapter.git",
     "exports": {
         "types": "./dist/index.d.ts",
-        "import": "./dist/cloudflare-worker-adapter.js",
-        "require": "./dist/cloudflare-worker-adapter.cjs"
+        "import": "./dist/index.js",
+        "require": "./dist/index.cjs"
     },
-    "main": "dist/cloudflare-worker-adapter.cjs.js",
-    "module": "dist/cloudflare-worker-adapter.js",
+    "main": "dist/index.cjs.js",
+    "module": "dist/index.js",
     "types": "dist/index.d.ts",
     "files": [
         "dist"
