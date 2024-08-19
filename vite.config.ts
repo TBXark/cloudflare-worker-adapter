@@ -18,7 +18,7 @@ export default defineConfig({
             formats: ['es', 'cjs'],
         },
         rollupOptions: {
-            external: ['ioredis', 'node-fetch', 'promised-sqlite3', 'toml', 'node:fs', 'node:http', 'node:util', 'node:stream', 'node:buffer', 'node:fs/promises'],
+            external: ['ioredis', 'node-fetch', 'sqlite3', 'toml', 'node:fs', 'node:http', 'node:util', 'node:stream', 'node:buffer', 'node:fs/promises'],
         },
         minify: false,
     },

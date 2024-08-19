@@ -1,8 +1,7 @@
-import { Buffer } from 'node:buffer';
 import type { RedisOptions } from 'ioredis';
 import { Redis } from 'ioredis';
 import type { Cache, CacheInfo, CacheItem, CacheStore } from './cache.ts';
-import { decodeCacheItem } from './cache.ts';
+import { cacheItemToType, decodeCacheItem, encodeCacheItem } from './cache.ts';
 
 export class RedisCache implements Cache {
     private redis: Redis;
@@ -29,32 +28,18 @@ export class RedisCache implements Cache {
     }
 
     async put(key: string, value: CacheItem, info?: CacheInfo): Promise<void> {
-        const cacheInfo: CacheInfo = info || { type: 'string' };
-        let stringValue: string;
-
-        switch (cacheInfo.type) {
-            case 'string':
-                stringValue = value as string;
-                break;
-            case 'json':
-                stringValue = JSON.stringify(value);
-                break;
-            case 'arrayBuffer':
-                stringValue = Buffer.from(value as ArrayBuffer).toString('base64');
-                break;
-            default:
-                throw new Error('Unsupported cache type');
-        }
-
+      
         const cacheStore: CacheStore = {
-            info: cacheInfo,
-            value: stringValue,
+            info: info || {
+                type: cacheItemToType(value),
+            },
+            value: encodeCacheItem(value),
         };
 
-        if (cacheInfo.expirationTtl) {
-            await this.redis.set(key, JSON.stringify(cacheStore), 'EX', cacheInfo.expirationTtl);
-        } else if (cacheInfo.expiration) {
-            const ttl = Math.floor((cacheInfo.expiration - Date.now()) / 1000);
+        if (cacheStore.info.expirationTtl) {
+            await this.redis.set(key, JSON.stringify(cacheStore), 'EX', cacheStore.info.expirationTtl);
+        } else if (cacheStore.info.expiration) {
+            const ttl = Math.floor((cacheStore.info.expiration - Date.now()) / 1000);
             await this.redis.set(key, JSON.stringify(cacheStore), 'EX', ttl > 0 ? ttl : 0);
         } else {
             await this.redis.set(key, JSON.stringify(cacheStore));
@@ -63,5 +48,9 @@ export class RedisCache implements Cache {
 
     async delete(key: string): Promise<void> {
         await this.redis.del(key);
+    }
+
+    async close() {
+        await this.redis.quit();
     }
 }

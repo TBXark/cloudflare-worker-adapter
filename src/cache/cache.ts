@@ -45,3 +45,16 @@ export function encodeCacheItem(value: CacheItem): string {
         return String(value);
     }
 }
+
+
+export function cacheItemToType(value: CacheItem): CacheType {
+    if (typeof value === 'string') {
+        return 'string';
+    } else if (value instanceof ArrayBuffer) {
+        return 'arrayBuffer';
+    } else if (typeof value === 'object') {
+        return 'json';
+    } else {
+        return 'string';
+    }
+}

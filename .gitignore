@@ -146,3 +146,6 @@ dist
 
 .vscode/
 package
+/cache.sqlite-wal
+/cache.sqlite-shm
+/cache.sqlite

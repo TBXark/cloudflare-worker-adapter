@@ -1,5 +1,5 @@
 import type { Cache, CacheInfo, CacheItem, CacheStore } from './cache.ts';
-import { decodeCacheItem, encodeCacheItem } from './cache.ts';
+import { cacheItemToType, decodeCacheItem, encodeCacheItem } from './cache.ts';
 
 export class MemoryCache implements Cache {
     private cache: Record<string, CacheStore>;
@@ -24,7 +24,7 @@ export class MemoryCache implements Cache {
     put(key: string, value: CacheItem, info?: CacheInfo): Promise<void> {
         this.cache[key] = {
             info: info || {
-                type: 'string',
+                type: cacheItemToType(value),
             },
             value: encodeCacheItem(value),
         };

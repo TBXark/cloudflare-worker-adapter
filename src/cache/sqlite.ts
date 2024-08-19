@@ -1,9 +1,10 @@
-import type { AsyncStatement } from 'promised-sqlite3';
-import { AsyncDatabase } from 'promised-sqlite3';
-import { decodeCacheItem } from './cache.ts';
+import type { Statement, Database } from 'sqlite3';
+import { cacheItemToType, decodeCacheItem, encodeCacheItem } from './cache.ts';
 import type { Cache, CacheInfo, CacheItem, CacheType } from './cache.ts';
+import sqlite3 from 'sqlite3';
 
 interface CacheRow {
+    id: number;
     key: string;
     value: string;
     type: string;
@@ -11,36 +12,50 @@ interface CacheRow {
 }
 
 export class SQLiteCache implements Cache {
-    private db?: AsyncDatabase;
+    private db?: Database;
     private tableName: string;
-    private getStatement?: AsyncStatement;
-    private putStatement?: AsyncStatement;
-    private deleteStatement?: AsyncStatement;
+    private getStatement?: Statement;
+    private upsertStatement?: Statement;
+    private deleteStatement?: Statement;
 
-    constructor(dbPath: string, tableName: string = 'CACHES') {
+    constructor(dbPath: string, tableName: string = 'CACHES_v2') {
         this.tableName = tableName;
-        this.initializeDatabase(dbPath).then(() => console.log('Database initialized'));
+        this.initializeDatabase(dbPath);
     }
 
-    private async initializeDatabase(dbPath: string) {
-        this.db = await AsyncDatabase.open(dbPath);
+    private initializeDatabase(dbPath: string) {
+        const create = `CREATE TABLE IF NOT EXISTS ${this.tableName} (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            key VARCHAR(100) NOT NULL UNIQUE,
+            value TEXT,
+            type VARCHAR(10),
+            expiration INTEGER
+        )`
+        const get = `SELECT * FROM ${this.tableName} WHERE key = ?`
+        const upt = `INSERT INTO ${this.tableName} (key, value, type, expiration) VALUES (?, ?, ?, ?) ON CONFLICT(key) DO UPDATE SET value = ?, type = ?, expiration = ?`
+        const del = `DELETE FROM ${this.tableName} WHERE key = ?`
 
-        await this.db.exec(`
-      CREATE TABLE IF NOT EXISTS ${this.tableName} (
-        key TEXT PRIMARY KEY,
-        value TEXT,
-        type TEXT,
-        expiration INTEGER
-      )
-    `);
-
-        this.getStatement = await this.db.prepare(`SELECT * FROM ${this.tableName} WHERE key = ?`);
-        this.putStatement = await this.db.prepare(`INSERT OR REPLACE INTO ${this.tableName} (key, value, type, expiration) VALUES (?, ?, ?, ?)`);
-        this.deleteStatement = await this.db.prepare(`DELETE FROM ${this.tableName} WHERE key = ?`);
+        this.db = new sqlite3.Database(dbPath);
+        this.db.serialize(() => {
+            this.db?.run(create);
+            this.getStatement = this.db?.prepare(get);
+            this.upsertStatement = this.db?.prepare(upt);
+            this.deleteStatement = this.db?.prepare(del);
+            this.db?.run('PRAGMA journal_mode = WAL');
+            this.db?.run(`CREATE INDEX IF NOT EXISTS idx_${this.tableName}_key ON ${this.tableName}(key)`);
+        });
     }
 
     async get(key: string, info?: CacheInfo): Promise<CacheItem | null> {
-        const row = await this.getStatement?.get<CacheRow>(key);
+        const row = await new Promise<CacheRow | undefined>((resolve, reject) => {
+            this.getStatement?.get<CacheRow>(key, (err, row) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(row);
+                }
+            });
+        })
         if (!row) {
             return null;
         }
@@ -67,19 +82,50 @@ export class SQLiteCache implements Cache {
     async put(key: string, value: CacheItem, info?: CacheInfo): Promise<void> {
         const row = {
             key,
-            value: value.toString(),
-            type: info?.type || 'string',
+            value: encodeCacheItem(value),
+            type: info?.type || cacheItemToType(value),
             expiration: this.calculateExpiration(info),
         };
 
-        try {
-            await this.putStatement?.run(row.key, row.value, row.type, row.expiration);
-        } catch (e) {
-            console.error('Failed to put cache item', e);
-        }
+        await new Promise<void>((resolve, reject) => {
+            this.upsertStatement?.run(
+                row.key, row.value, row.type, row.expiration,
+                row.value, row.type, row.expiration,
+                (err: Error | any) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve();
+                    }
+                }
+            );
+        });
     }
 
     async delete(key: string): Promise<void> {
-        await this.deleteStatement?.run(key);
+        await new Promise<void>((resolve, reject) => {
+            this.deleteStatement?.run(key, (err: Error | any) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        });
+    }
+
+    async close() {
+        await new Promise<void>((resolve, reject) => {
+            this.getStatement?.finalize();
+            this.upsertStatement?.finalize();
+            this.deleteStatement?.finalize();
+            this.db?.close((err) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        });
     }
 }
