@@ -1,5 +1,4 @@
-// eslint-disable-next-line antfu/no-import-dist
-import { startServer, SQLiteCache } from '../dist/index.js';
+import { SQLiteCache, startServer } from '../src/index';
 
 const cache = new SQLiteCache('.temp/cache.sqlite');
 
@@ -14,6 +13,6 @@ startServer(3000, 'localhost', './wrangler.toml', {}, {
         console.error(e);
     });
     counter++;
-    await cache.put('counter', {counter});
+    await cache.put('counter', { counter });
     return await fetch('https://api.github.com/users/tbxark');
 });

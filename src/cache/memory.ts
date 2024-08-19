@@ -1,5 +1,5 @@
-import type { Cache, CacheInfo, CacheItem, CacheStore } from './cache.ts';
-import { cacheItemToType, decodeCacheItem, encodeCacheItem } from './cache.ts';
+import type { Cache, CacheInfo, CacheItem, CacheStore } from './cache';
+import { cacheItemToType, decodeCacheItem, encodeCacheItem } from './cache';
 
 export class MemoryCache implements Cache {
     private cache: Record<string, CacheStore>;

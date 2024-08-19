@@ -18,9 +18,8 @@
     ],
     "scripts": {
         "lint": "eslint --fix *.js *.ts src/**/*.ts test",
-        "test": "npm run build && node test/test.js",
-        "build": "vite build ",
-        "build:types": "tsc"
+        "test": "tsx test/test.ts",
+        "build": "vite build"
     },
     "dependencies": {
         "ioredis": "^5.4.1",
@@ -34,6 +33,7 @@
         "@types/node": "^22.4.1",
         "eslint": "^9.8.0",
         "eslint-plugin-format": "^0.1.2",
+        "tsx": "^4.17.0",
         "typescript": "^5.5.4",
         "vite": "^5.2.10",
         "vite-plugin-dts": "^4.0.3"

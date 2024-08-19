@@ -1,7 +1,7 @@
-import type { Statement, Database } from 'sqlite3';
-import { cacheItemToType, decodeCacheItem, encodeCacheItem } from './cache.ts';
-import type { Cache, CacheInfo, CacheItem, CacheType } from './cache.ts';
+import type { Database, Statement } from 'sqlite3';
 import sqlite3 from 'sqlite3';
+import { cacheItemToType, decodeCacheItem, encodeCacheItem } from './cache';
+import type { Cache, CacheInfo, CacheItem, CacheType } from './cache';
 
 interface CacheRow {
     id: number;
@@ -30,10 +30,10 @@ export class SQLiteCache implements Cache {
             value TEXT,
             type VARCHAR(10),
             expiration INTEGER
-        )`
-        const get = `SELECT * FROM ${this.tableName} WHERE key = ?`
-        const upt = `INSERT INTO ${this.tableName} (key, value, type, expiration) VALUES (?, ?, ?, ?) ON CONFLICT(key) DO UPDATE SET value = ?, type = ?, expiration = ?`
-        const del = `DELETE FROM ${this.tableName} WHERE key = ?`
+        )`;
+        const get = `SELECT * FROM ${this.tableName} WHERE key = ?`;
+        const upt = `INSERT INTO ${this.tableName} (key, value, type, expiration) VALUES (?, ?, ?, ?) ON CONFLICT(key) DO UPDATE SET value = ?, type = ?, expiration = ?`;
+        const del = `DELETE FROM ${this.tableName} WHERE key = ?`;
 
         this.db = new sqlite3.Database(dbPath);
         this.db.serialize(() => {
@@ -55,7 +55,7 @@ export class SQLiteCache implements Cache {
                     resolve(row);
                 }
             });
-        })
+        });
         if (!row) {
             return null;
         }
@@ -89,15 +89,20 @@ export class SQLiteCache implements Cache {
 
         await new Promise<void>((resolve, reject) => {
             this.upsertStatement?.run(
-                row.key, row.value, row.type, row.expiration,
-                row.value, row.type, row.expiration,
+                row.key,
+                row.value,
+                row.type,
+                row.expiration,
+                row.value,
+                row.type,
+                row.expiration,
                 (err: Error | any) => {
                     if (err) {
                         reject(err);
                     } else {
                         resolve();
                     }
-                }
+                },
             );
         });
     }

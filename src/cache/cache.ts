@@ -46,7 +46,6 @@ export function encodeCacheItem(value: CacheItem): string {
     }
 }
 
-
 export function cacheItemToType(value: CacheItem): CacheType {
     if (typeof value === 'string') {
         return 'string';

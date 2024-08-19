@@ -1,24 +1,12 @@
 {
     "compilerOptions": {
-        "target": "ES2020",
-        "lib": ["ES2020"],
-        "useDefineForClassFields": true,
         "module": "ESNext",
-
-        /* Bundler mode */
-        "moduleResolution": "Bundler",
-        "resolveJsonModule": true,
-        "allowImportingTsExtensions": true,
-        "sourceMap": true,
-
-        /* Linting */
-        "strict": true,
-        "noFallthroughCasesInSwitch": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "noEmit": true,
-        "isolatedModules": true,
-        "skipLibCheck": true
+        "moduleResolution": "Node",
+        "esModuleInterop": true,
+        "target": "ESNext",
+        "lib": ["ESNext"],
+        "outDir": "dist",
+        "rootDir": "src"
     },
-    "include": ["src"]
+    "include": ["src", "test"],
 }

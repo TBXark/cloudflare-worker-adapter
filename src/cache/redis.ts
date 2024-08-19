@@ -1,7 +1,7 @@
 import type { RedisOptions } from 'ioredis';
 import { Redis } from 'ioredis';
-import type { Cache, CacheInfo, CacheItem, CacheStore } from './cache.ts';
-import { cacheItemToType, decodeCacheItem, encodeCacheItem } from './cache.ts';
+import type { Cache, CacheInfo, CacheItem, CacheStore } from './cache';
+import { cacheItemToType, decodeCacheItem, encodeCacheItem } from './cache';
 
 export class RedisCache implements Cache {
     private redis: Redis;
@@ -28,7 +28,6 @@ export class RedisCache implements Cache {
     }
 
     async put(key: string, value: CacheItem, info?: CacheInfo): Promise<void> {
-      
         const cacheStore: CacheStore = {
             info: info || {
                 type: cacheItemToType(value),

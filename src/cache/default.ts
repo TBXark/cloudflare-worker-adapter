@@ -1,8 +1,8 @@
-import type { Cache } from './cache.ts';
-import { LocalCache } from './local.ts';
-import { SQLiteCache } from './sqlite.ts';
-import { RedisCache } from './redis.ts';
-import { MemoryCache } from './memory.ts';
+import type { Cache } from './cache';
+import { LocalCache } from './local';
+import { SQLiteCache } from './sqlite';
+import { RedisCache } from './redis';
+import { MemoryCache } from './memory';
 
 export interface CacheOptions {
     uri: string;
