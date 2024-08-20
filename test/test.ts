@@ -1,4 +1,11 @@
+import * as process from 'node:process';
 import { SQLiteCache, startServer } from '../src';
+import { installFetchProxy } from '../src/proxy';
+
+const proxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY || '';
+if (proxy) {
+    installFetchProxy(proxy);
+}
 
 const cache = new SQLiteCache('./test/.temp/cache.sqlite');
 
