@@ -32,7 +32,7 @@ export class RedisCache implements Cache {
             info: info || {
                 type: cacheItemToType(value),
             },
-            value: encodeCacheItem(value),
+            value: await encodeCacheItem(value),
         };
 
         if (cacheStore.info.expirationTtl) {
@@ -43,6 +43,22 @@ export class RedisCache implements Cache {
         } else {
             await this.redis.set(key, JSON.stringify(cacheStore));
         }
+    }
+
+    async list(prefix?: string, limit?: number): Promise<string[]> {
+        return new Promise<string[]>((resolve, reject) => {
+            this.redis.keys(`${prefix || ''}*`, (err, keys) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    if (limit === null || limit === undefined) {
+                        resolve(keys);
+                    } else {
+                        resolve(keys.slice(0, limit));
+                    }
+                }
+            });
+        });
     }
 
     async delete(key: string): Promise<void> {

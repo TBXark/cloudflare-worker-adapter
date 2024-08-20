@@ -25,6 +25,10 @@ export class LocalCache implements Cache {
         return this.writeToDisk();
     }
 
+    async list(prefix?: string, limit?: number): Promise<string[]> {
+        return this.store.list(prefix, limit);
+    }
+
     async readFromDisk() {
         try {
             const data = await readFile(this.path, 'utf-8');

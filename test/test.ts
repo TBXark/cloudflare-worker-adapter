@@ -18,5 +18,6 @@ startServer(8787, '0.0.0.0', './test/wrangler.toml', {
     });
     counter++;
     await cache.put('counter', { counter });
+    console.log(await cache.list('c'));
     return await fetch('https://api.github.com/users/tbxark');
 });

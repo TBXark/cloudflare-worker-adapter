@@ -14,10 +14,12 @@ interface CacheRow {
 
 export class SQLiteCache implements Cache {
     private db?: Database;
-    private tableName: string;
+    private readonly tableName: string;
     private getStatement?: Statement;
     private upsertStatement?: Statement;
     private deleteStatement?: Statement;
+    private listStatement?: Statement;
+    private listNoLimitStatement?: Statement;
 
     constructor(dbPath: string, tableName: string = 'CACHES_v2') {
         this.tableName = tableName;
@@ -35,6 +37,8 @@ export class SQLiteCache implements Cache {
         const get = `SELECT * FROM ${this.tableName} WHERE key = ?`;
         const upt = `INSERT INTO ${this.tableName} (key, value, type, expiration) VALUES (?, ?, ?, ?) ON CONFLICT(key) DO UPDATE SET value = ?, type = ?, expiration = ?`;
         const del = `DELETE FROM ${this.tableName} WHERE key = ?`;
+        const list = `SELECT key FROM ${this.tableName} WHERE key LIKE ? LIMIT ?`;
+        const listNoLimit = `SELECT key FROM ${this.tableName} WHERE key LIKE ?`;
 
         this.db = new sqlite3.Database(dbPath);
         this.db.serialize(() => {
@@ -42,6 +46,8 @@ export class SQLiteCache implements Cache {
             this.getStatement = this.db?.prepare(get);
             this.upsertStatement = this.db?.prepare(upt);
             this.deleteStatement = this.db?.prepare(del);
+            this.listStatement = this.db?.prepare(list);
+            this.listNoLimitStatement = this.db?.prepare(listNoLimit);
             this.db?.run('PRAGMA journal_mode = WAL');
             this.db?.run(`CREATE INDEX IF NOT EXISTS idx_${this.tableName}_key ON ${this.tableName}(key)`);
         });
@@ -83,7 +89,7 @@ export class SQLiteCache implements Cache {
     async put(key: string, value: CacheItem, info?: CacheInfo): Promise<void> {
         const row = {
             key,
-            value: encodeCacheItem(value),
+            value: await encodeCacheItem(value),
             type: info?.type || cacheItemToType(value),
             expiration: this.calculateExpiration(info),
         };
@@ -115,6 +121,29 @@ export class SQLiteCache implements Cache {
                     reject(err);
                 } else {
                     resolve();
+                }
+            });
+        });
+    }
+
+    async list(prefix?: string, limit?: number): Promise<string[]> {
+        if (limit === undefined || limit == null) {
+            return new Promise<string[]>((resolve, reject) => {
+                this.listNoLimitStatement?.all<CacheRow>([`${prefix || ''}%`], (err, row) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(row ? row.map(r => r.key) : []);
+                    }
+                });
+            });
+        }
+        return new Promise<string[]>((resolve, reject) => {
+            this.listStatement?.all<CacheRow>([`${prefix || ''}%`, limit], (err, row) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(row ? row.map(r => r.key) : []);
                 }
             });
         });

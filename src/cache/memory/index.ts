@@ -21,23 +21,36 @@ export class MemoryCache implements Cache {
         return decodeCacheItem(item.value, info?.type || item.info.type);
     }
 
-    put(key: string, value: CacheItem, info?: CacheInfo): Promise<void> {
+    async put(key: string, value: CacheItem, info?: CacheInfo): Promise<void> {
         this.cache[key] = {
             info: info || {
                 type: cacheItemToType(value),
             },
-            value: encodeCacheItem(value),
+            value: await encodeCacheItem(value),
         };
         return Promise.resolve();
     }
 
-    delete(key: string): Promise<void> {
+    async list(prefix?: string, limit?: number): Promise<string[]> {
+        const res: string[] = [];
+        for (const key in this.cache) {
+            if (!prefix || key.startsWith(prefix)) {
+                res.push(key);
+            }
+            if (limit && res.length >= limit) {
+                break;
+            }
+        }
+        return Promise.resolve(res);
+    }
+
+    async delete(key: string): Promise<void> {
         delete this.cache[key];
         return Promise.resolve();
     }
 
     toString(): string {
-        return JSON.stringify(this.cache);
+        return JSON.stringify(this.cache, null, 2);
     }
 
     restoreFromString(data: string) {
