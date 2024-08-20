@@ -1,19 +1,22 @@
 import * as fs from 'node:fs';
 import * as http from 'node:http';
-import { Buffer } from 'node:buffer';
 import { Readable } from 'node:stream';
 import { parse } from 'toml';
 
 export interface ServerHandler {
-    (req: Request, env: object): Promise<Response>;
+    (req: Request, env: any): Promise<Response>;
 }
 
 export interface RequestBuilder {
-    (baseURL: string, req: http.IncomingMessage): Promise<Request>;
+    (baseURL: string, req: http.IncomingMessage): Request;
 }
 
-export interface Setting {
-    server?: string;
+export type HTTPScheme = 'http' | 'https';
+
+export interface ForwardSetting {
+    schema?: HTTPScheme;
+    host?: string;
+    baseURL?: string;
 }
 
 export function bindGlobal(target: Record<string, any>) {
@@ -26,8 +29,8 @@ export function bindGlobal(target: Record<string, any>) {
     }
 }
 
-export function initEnv(config: string, options?: Record<string, any>) {
-    let env: object = {};
+export function initEnv(config: string, options?: Record<string, any>): Record<string, any> {
+    let env: Record<string, any> = {};
     if (options) {
         env = {
             ...env,
@@ -37,10 +40,9 @@ export function initEnv(config: string, options?: Record<string, any>) {
     if (config) {
         const raw = fs.readFileSync(config, 'utf-8');
         const tomlFile = parse(raw);
-        console.log(JSON.stringify(tomlFile.vars, null, 2));
-        for (const key in (tomlFile.kv_namespaces || [])) {
-            if (!(env as any)[key]) {
-                throw new Error(`Missing ${key} in env`);
+        for (const key of (tomlFile.kv_namespaces || [])) {
+            if (!Object.prototype.hasOwnProperty.call(env, key.binding)) {
+                throw new Error(`Missing kv_namespaces: ${key.binding}`);
             }
         }
         env = {
@@ -51,34 +53,35 @@ export function initEnv(config: string, options?: Record<string, any>) {
     return env;
 }
 
-export async function defaultRequestBuilder(baseURL: string, req: http.IncomingMessage): Promise<Request> {
+export function defaultRequestBuilder(baseURL: string, req: http.IncomingMessage): Request {
     const url = new URL(req.url || '', baseURL);
+    const headers: Record<string, string | string[]> = {};
+    for (const [key, value] of Object.entries(req.headers)) {
+        headers[key] = value;
+    }
     const init: RequestInit = {
         method: req.method || 'GET',
-        headers: {},
+        headers,
         body: null,
     };
-    for (const [key, value] of Object.entries(req.headers)) {
-        (init.headers as any)[key] = value;
-    }
     if (req.method !== 'GET' && req.method !== 'HEAD' && req.readable) {
-        const chunks = await Readable.from(req).toArray();
-        init.body = Buffer.concat(chunks);
+        init.body = Readable.from(req);
+        init.duplex = 'half';
     }
     return new Request(url.toString(), init);
 }
 
-export function startServer(port: number = 3000, host: string = 'localhost', config: string, options: Record<string, any>, setting: object, handler: ServerHandler) {
+export function startServer(port: number = 3000, hostname: string = 'localhost', config: string, options: Record<string, any>, setting: ForwardSetting, handler: ServerHandler) {
     const env = initEnv(config, options);
-    startServerV2(port, host, env, setting, defaultRequestBuilder, handler);
+    startServerV2(port, hostname, env, setting, defaultRequestBuilder, handler);
 }
 
-export function startServerV2(port: number = 3000, host: string = 'localhost', env: object, setting: Setting, requestBuilder: RequestBuilder, handler: ServerHandler) {
-    const baseURL = setting?.server || `http://${host}`;
+export function startServerV2(port: number = 3000, hostname: string = 'localhost', env: any, setting: ForwardSetting, requestBuilder: RequestBuilder = null, handler: ServerHandler) {
     const server = http.createServer(async (req, res) => {
         console.log(`\x1B[31m${req.method}\x1B[0m: ${req.url}`);
-        const fetchReq = await (requestBuilder || defaultRequestBuilder)(baseURL, req);
+        const baseURL = setting.baseURL || `${setting.schema || 'http'}://${setting.host || req.headers.host || `${hostname}:${port}`}`;
         try {
+            const fetchReq = (requestBuilder || defaultRequestBuilder)(baseURL, req);
             const fetchRes = await handler(fetchReq, env);
             res.statusCode = fetchRes.status;
             res.statusMessage = fetchRes.statusText;
@@ -91,6 +94,12 @@ export function startServerV2(port: number = 3000, host: string = 'localhost', e
             res.setHeader('Transfer-Encoding', 'chunked');
             if (fetchRes.body) {
                 const readable = Readable.from(fetchRes.body);
+                readable.on('error', () => {
+                    res.destroy();
+                });
+                res.on('close', () => {
+                    readable.destroy();
+                });
                 readable.pipe(res);
             } else {
                 res.end();
@@ -103,7 +112,7 @@ export function startServerV2(port: number = 3000, host: string = 'localhost', e
         }
     });
     server.timeout = 30000;
-    server.listen(port, host, () => {
-        console.log(`Server listening on  http://${host}:${port || 3000}`);
+    server.listen(port, hostname, () => {
+        console.log(`Server listening on  ${hostname}:${port || 3000}`);
     });
 }
