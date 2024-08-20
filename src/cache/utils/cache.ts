@@ -1,7 +1,7 @@
 import { Buffer } from 'node:buffer';
 import { ReadableStream } from 'node:stream/web';
 import { buffer } from 'node:stream/consumers';
-import type { CacheItem, CacheType } from '../types/types';
+import type { CacheItem, CacheType, PutCacheInfo } from '../types/types';
 
 export function decodeCacheItem(value: string, type?: CacheType): CacheItem {
     switch (type) {
@@ -50,4 +50,14 @@ export function cacheItemToType(value: CacheItem): CacheType {
     } else {
         return 'string';
     }
+}
+
+export function calculateExpiration(info?: PutCacheInfo): number | null {
+    if (info?.expiration) {
+        return info.expiration;
+    }
+    if (info?.expirationTtl) {
+        return Date.now() + info.expirationTtl;
+    }
+    return null;
 }

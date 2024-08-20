@@ -1,8 +1,8 @@
 import type { Database, Statement } from 'sqlite3';
 import sqlite3 from 'sqlite3';
-import { cacheItemToType, decodeCacheItem, encodeCacheItem } from '../utils/cache';
+import { cacheItemToType, calculateExpiration, decodeCacheItem, encodeCacheItem } from '../utils/cache';
 
-import type { Cache, CacheInfo, CacheItem, CacheType } from '../types/types';
+import type { Cache, CacheItem, CacheType, GetCacheInfo, PutCacheInfo } from '../types/types';
 
 interface CacheRow {
     id: number;
@@ -53,7 +53,7 @@ export class SQLiteCache implements Cache {
         });
     }
 
-    async get(key: string, info?: CacheInfo): Promise<CacheItem | null> {
+    async get(key: string, info?: GetCacheInfo): Promise<CacheItem | null> {
         const row = await new Promise<CacheRow | undefined>((resolve, reject) => {
             this.getStatement?.get<CacheRow>(key, (err, row) => {
                 if (err) {
@@ -76,22 +76,12 @@ export class SQLiteCache implements Cache {
         return decodeCacheItem(row.value, info?.type || row.type as CacheType);
     }
 
-    private calculateExpiration(info?: CacheInfo): number | null {
-        if (info?.expiration) {
-            return info.expiration;
-        }
-        if (info?.expirationTtl) {
-            return Date.now() + info.expirationTtl;
-        }
-        return null;
-    }
-
-    async put(key: string, value: CacheItem, info?: CacheInfo): Promise<void> {
+    async put(key: string, value: CacheItem, info?: PutCacheInfo): Promise<void> {
         const row = {
             key,
             value: await encodeCacheItem(value),
-            type: info?.type || cacheItemToType(value),
-            expiration: this.calculateExpiration(info),
+            type: cacheItemToType(value),
+            expiration: calculateExpiration(info),
         };
 
         await new Promise<void>((resolve, reject) => {

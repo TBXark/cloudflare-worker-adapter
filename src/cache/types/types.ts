@@ -6,6 +6,14 @@ export type CacheType = 'string' | 'text' | 'json' | 'arrayBuffer' | 'stream';
 export interface CacheInfo {
     type: CacheType;
     expiration?: number;
+}
+
+export interface GetCacheInfo {
+    type: CacheType;
+}
+
+export interface PutCacheInfo {
+    expiration?: number;
     expirationTtl?: number;
 }
 
@@ -15,8 +23,8 @@ export interface CacheStore {
 }
 
 export interface Cache {
-    get: (key: string, info?: CacheInfo) => Promise<CacheItem | null>;
-    put: (key: string, value: CacheItem, info?: CacheInfo) => Promise<void>;
+    get: (key: string, info?: GetCacheInfo) => Promise<CacheItem | null>;
+    put: (key: string, value: CacheItem, info?: PutCacheInfo) => Promise<void>;
     delete: (key: string) => Promise<void>;
     list?: (prefix?: string, limit?: number) => Promise<string[]>;
 }

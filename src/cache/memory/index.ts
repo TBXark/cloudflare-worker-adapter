@@ -1,5 +1,5 @@
-import { cacheItemToType, decodeCacheItem, encodeCacheItem } from '../utils/cache';
-import type { Cache, CacheInfo, CacheItem, CacheStore } from '../types/types';
+import { cacheItemToType, calculateExpiration, decodeCacheItem, encodeCacheItem } from '../utils/cache';
+import type { Cache, CacheItem, CacheStore, GetCacheInfo, PutCacheInfo } from '../types/types';
 
 export class MemoryCache implements Cache {
     private cache: Record<string, CacheStore>;
@@ -8,7 +8,7 @@ export class MemoryCache implements Cache {
         this.cache = store;
     }
 
-    async get(key: string, info?: CacheInfo): Promise<CacheItem | null> {
+    async get(key: string, info?: GetCacheInfo): Promise<CacheItem | null> {
         const item = this.cache[key];
         if (!item) {
             return null;
@@ -21,10 +21,11 @@ export class MemoryCache implements Cache {
         return decodeCacheItem(item.value, info?.type || item.info.type);
     }
 
-    async put(key: string, value: CacheItem, info?: CacheInfo): Promise<void> {
+    async put(key: string, value: CacheItem, info?: PutCacheInfo): Promise<void> {
         this.cache[key] = {
-            info: info || {
+            info: {
                 type: cacheItemToType(value),
+                expiration: calculateExpiration(info),
             },
             value: await encodeCacheItem(value),
         };
@@ -49,7 +50,17 @@ export class MemoryCache implements Cache {
         return Promise.resolve();
     }
 
+    private trimCache() {
+        for (const key in this.cache) {
+            const item = this.cache[key];
+            if (item.info.expiration && item.info.expiration < Date.now()) {
+                delete this.cache[key];
+            }
+        }
+    }
+
     toString(): string {
+        this.trimCache();
         return JSON.stringify(this.cache, null, 2);
     }
 

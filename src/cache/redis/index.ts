@@ -1,7 +1,7 @@
 import type { RedisOptions } from 'ioredis';
 import { Redis } from 'ioredis';
-import { cacheItemToType, decodeCacheItem, encodeCacheItem } from '../utils/cache';
-import type { Cache, CacheInfo, CacheItem, CacheStore } from '../types/types';
+import { cacheItemToType, calculateExpiration, decodeCacheItem, encodeCacheItem } from '../utils/cache';
+import type { Cache, CacheItem, CacheStore, GetCacheInfo, PutCacheInfo } from '../types/types';
 
 export class RedisCache implements Cache {
     private redis: Redis;
@@ -18,7 +18,7 @@ export class RedisCache implements Cache {
         return new RedisCache(new Redis(uri));
     }
 
-    async get(key: string, info?: CacheInfo): Promise<CacheItem | null> {
+    async get(key: string, info?: GetCacheInfo): Promise<CacheItem | null> {
         const result = await this.redis.get(key);
         if (!result)
             return null;
@@ -27,18 +27,16 @@ export class RedisCache implements Cache {
         return decodeCacheItem(item.value, info?.type || item.info.type);
     }
 
-    async put(key: string, value: CacheItem, info?: CacheInfo): Promise<void> {
+    async put(key: string, value: CacheItem, info?: PutCacheInfo): Promise<void> {
         const cacheStore: CacheStore = {
-            info: info || {
+            info: {
                 type: cacheItemToType(value),
+                expiration: calculateExpiration(info),
             },
             value: await encodeCacheItem(value),
         };
-
-        if (cacheStore.info.expirationTtl) {
-            await this.redis.set(key, JSON.stringify(cacheStore), 'EX', cacheStore.info.expirationTtl);
-        } else if (cacheStore.info.expiration) {
-            const ttl = Math.floor((cacheStore.info.expiration - Date.now()) / 1000);
+        if (info.expiration) {
+            const ttl = Math.floor((info.expiration - Date.now()) / 1000);
             await this.redis.set(key, JSON.stringify(cacheStore), 'EX', ttl > 0 ? ttl : 0);
         } else {
             await this.redis.set(key, JSON.stringify(cacheStore));

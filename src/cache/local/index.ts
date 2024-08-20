@@ -1,6 +1,6 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { MemoryCache } from '../memory';
-import type { Cache, CacheInfo, CacheItem } from '../types/types';
+import type { Cache, CacheItem, GetCacheInfo, PutCacheInfo } from '../types/types';
 
 export class LocalCache implements Cache {
     private store = new MemoryCache();
@@ -11,11 +11,11 @@ export class LocalCache implements Cache {
         this.readFromDisk().then(() => console.log('Cache loaded'));
     }
 
-    async get(key: string, info?: CacheInfo): Promise<CacheItem | null> {
+    async get(key: string, info?: GetCacheInfo): Promise<CacheItem | null> {
         return this.store.get(key, info);
     }
 
-    async put(key: string, value: CacheItem, info?: CacheInfo): Promise<void> {
+    async put(key: string, value: CacheItem, info?: PutCacheInfo): Promise<void> {
         await this.store.put(key, value, info);
         return this.writeToDisk();
     }
