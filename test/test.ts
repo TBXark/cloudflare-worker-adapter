@@ -1,10 +1,10 @@
 import { SQLiteCache, startServer } from '../src/index';
 
-const cache = new SQLiteCache('.temp/cache.sqlite');
+const cache = new SQLiteCache('.test/temp/cache.sqlite');
 
 let counter = 0;
 
-startServer(3000, 'localhost', './wrangler.toml', {}, {
+startServer(3000, 'localhost', './test/wrangler.toml', {}, {
     server: 'https://tbxark.com',
 }, async () => {
     await cache.get('counter').then((value) => {

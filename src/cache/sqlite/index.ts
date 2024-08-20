@@ -1,7 +1,8 @@
 import type { Database, Statement } from 'sqlite3';
 import sqlite3 from 'sqlite3';
-import { cacheItemToType, decodeCacheItem, encodeCacheItem } from './cache';
-import type { Cache, CacheInfo, CacheItem, CacheType } from './cache';
+import { cacheItemToType, decodeCacheItem, encodeCacheItem } from '../utils/cache';
+
+import type { Cache, CacheInfo, CacheItem, CacheType } from '../types/types';
 
 interface CacheRow {
     id: number;

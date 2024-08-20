@@ -3,7 +3,6 @@ import * as http from 'node:http';
 import { Buffer } from 'node:buffer';
 import { Readable } from 'node:stream';
 import { parse } from 'toml';
-import { MemoryCache } from './cache';
 
 export interface ServerHandler {
     (req: Request, env: object): Promise<Response>;
@@ -41,8 +40,7 @@ export function initEnv(config: string, options?: Record<string, any>) {
         console.log(JSON.stringify(tomlFile.vars, null, 2));
         for (const key in (tomlFile.kv_namespaces || [])) {
             if (!(env as any)[key]) {
-                console.log(`Database ${key} is not defined. Use MemoryCache.`);
-                (env as any)[key] = new MemoryCache();
+                throw new Error(`Missing ${key} in env`);
             }
         }
         env = {
