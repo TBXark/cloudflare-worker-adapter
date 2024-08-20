@@ -1,6 +1,6 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { MemoryCache } from '../memory';
-import type { Cache, CacheItem, GetCacheInfo, PutCacheInfo } from '../types/types';
+import type { Cache, CacheItem, GetCacheInfo, PutCacheInfo } from '../types';
 
 export class LocalCache implements Cache {
     private store = new MemoryCache();

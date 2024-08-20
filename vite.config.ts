@@ -15,16 +15,18 @@ export default defineConfig({
         nodeExternals(),
     ],
     build: {
+        // target: 'esnext',
         lib: {
             entry: {
                 index: path.resolve(__dirname, 'src/index.ts'),
                 serve: path.resolve(__dirname, 'src/serve/index.ts'),
                 cache: path.resolve(__dirname, 'src/cache/index.ts'),
+                d1Cache: path.resolve(__dirname, 'src/cache/d1/index.ts'),
                 localCache: path.resolve(__dirname, 'src/cache/local/index.ts'),
                 memoryCache: path.resolve(__dirname, 'src/cache/memory/index.ts'),
                 redisCache: path.resolve(__dirname, 'src/cache/redis/index.ts'),
                 sqliteCache: path.resolve(__dirname, 'src/cache/sqlite/index.ts'),
-                cacheUtils: path.resolve(__dirname, 'src/cache/utils/cache.ts'),
+                cacheUtils: path.resolve(__dirname, 'src/cache/utils/index.ts'),
                 fetchProxy: path.resolve(__dirname, 'src/proxy/index.ts'),
             },
             formats: ['es', 'cjs'],

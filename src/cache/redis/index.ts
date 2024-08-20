@@ -1,7 +1,7 @@
 import type { RedisOptions } from 'ioredis';
 import { Redis } from 'ioredis';
-import { cacheItemToType, calculateExpiration, decodeCacheItem, encodeCacheItem } from '../utils/cache';
-import type { Cache, CacheItem, CacheStore, GetCacheInfo, PutCacheInfo } from '../types/types';
+import { cacheItemToType, calculateExpiration, decodeCacheItem, encodeCacheItem } from '../utils';
+import type { Cache, CacheItem, CacheStore, GetCacheInfo, PutCacheInfo } from '../types';
 
 export class RedisCache implements Cache {
     private redis: Redis;

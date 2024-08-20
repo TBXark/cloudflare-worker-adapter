@@ -16,6 +16,11 @@
             "import": "./dist/cache.js",
             "require": "./dist/cache.cjs"
         },
+        "./d1Cache": {
+            "types": "./dist/d1Cache.d.ts",
+            "import": "./dist/d1Cache.js",
+            "require": "./dist/d1Cache.cjs"
+        },
         "./localCache": {
             "types": "./dist/localCache.d.ts",
             "import": "./dist/localCache.js",

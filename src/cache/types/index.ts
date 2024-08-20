@@ -1,6 +1,6 @@
 import type { ReadableStream } from 'node:stream/web';
 
-export type CacheItem = string | object | ArrayBuffer | ReadableStream;
+export type CacheItem = string | object | ArrayBuffer | ReadableStream | null;
 export type CacheType = 'string' | 'text' | 'json' | 'arrayBuffer' | 'stream';
 
 export interface CacheInfo {

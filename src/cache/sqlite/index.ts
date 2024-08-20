@@ -1,16 +1,8 @@
 import type { Database, Statement } from 'sqlite3';
 import sqlite3 from 'sqlite3';
-import { cacheItemToType, calculateExpiration, decodeCacheItem, encodeCacheItem } from '../utils/cache';
-
-import type { Cache, CacheItem, CacheType, GetCacheInfo, PutCacheInfo } from '../types/types';
-
-interface CacheRow {
-    id: number;
-    key: string;
-    value: string;
-    type: string;
-    expiration: number;
-}
+import { cacheItemToType, calculateExpiration, createSQLCacheStmt, decodeCacheItem, encodeCacheItem } from '../utils';
+import type { Cache, CacheItem, CacheType, GetCacheInfo, PutCacheInfo } from '../types';
+import type { SQLCacheRow } from '../utils';
 
 export class SQLiteCache implements Cache {
     private db?: Database;
@@ -27,35 +19,23 @@ export class SQLiteCache implements Cache {
     }
 
     private initializeDatabase(dbPath: string) {
-        const create = `CREATE TABLE IF NOT EXISTS ${this.tableName} (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            key VARCHAR(100) NOT NULL UNIQUE,
-            value TEXT,
-            type VARCHAR(10),
-            expiration INTEGER
-        )`;
-        const get = `SELECT * FROM ${this.tableName} WHERE key = ?`;
-        const upt = `INSERT INTO ${this.tableName} (key, value, type, expiration) VALUES (?, ?, ?, ?) ON CONFLICT(key) DO UPDATE SET value = ?, type = ?, expiration = ?`;
-        const del = `DELETE FROM ${this.tableName} WHERE key = ?`;
-        const list = `SELECT key FROM ${this.tableName} WHERE key LIKE ? LIMIT ?`;
-        const listNoLimit = `SELECT key FROM ${this.tableName} WHERE key LIKE ?`;
-
+        const stmt = createSQLCacheStmt(this.tableName);
         this.db = new sqlite3.Database(dbPath);
         this.db.serialize(() => {
-            this.db?.run(create);
-            this.getStatement = this.db?.prepare(get);
-            this.upsertStatement = this.db?.prepare(upt);
-            this.deleteStatement = this.db?.prepare(del);
-            this.listStatement = this.db?.prepare(list);
-            this.listNoLimitStatement = this.db?.prepare(listNoLimit);
+            this.db?.run(stmt.create);
+            this.getStatement = this.db?.prepare(stmt.get);
+            this.upsertStatement = this.db?.prepare(stmt.upsert);
+            this.deleteStatement = this.db?.prepare(stmt.delete);
+            this.listStatement = this.db?.prepare(stmt.list);
+            this.listNoLimitStatement = this.db?.prepare(stmt.listNoLimit);
             this.db?.run('PRAGMA journal_mode = WAL');
             this.db?.run(`CREATE INDEX IF NOT EXISTS idx_${this.tableName}_key ON ${this.tableName}(key)`);
         });
     }
 
     async get(key: string, info?: GetCacheInfo): Promise<CacheItem | null> {
-        const row = await new Promise<CacheRow | undefined>((resolve, reject) => {
-            this.getStatement?.get<CacheRow>(key, (err, row) => {
+        const row = await new Promise<SQLCacheRow | undefined>((resolve, reject) => {
+            this.getStatement?.get<SQLCacheRow>(key, (err, row) => {
                 if (err) {
                     reject(err);
                 } else {
@@ -119,7 +99,7 @@ export class SQLiteCache implements Cache {
     async list(prefix?: string, limit?: number): Promise<string[]> {
         if (limit === undefined || limit == null) {
             return new Promise<string[]>((resolve, reject) => {
-                this.listNoLimitStatement?.all<CacheRow>([`${prefix || ''}%`], (err, row) => {
+                this.listNoLimitStatement?.all<SQLCacheRow>([`${prefix || ''}%`], (err, row) => {
                     if (err) {
                         reject(err);
                     } else {
@@ -129,7 +109,7 @@ export class SQLiteCache implements Cache {
             });
         }
         return new Promise<string[]>((resolve, reject) => {
-            this.listStatement?.all<CacheRow>([`${prefix || ''}%`, limit], (err, row) => {
+            this.listStatement?.all<SQLCacheRow>([`${prefix || ''}%`, limit], (err, row) => {
                 if (err) {
                     reject(err);
                 } else {

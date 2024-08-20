@@ -1,5 +1,5 @@
-import { cacheItemToType, calculateExpiration, decodeCacheItem, encodeCacheItem } from '../utils/cache';
-import type { Cache, CacheItem, CacheStore, GetCacheInfo, PutCacheInfo } from '../types/types';
+import { cacheItemToType, calculateExpiration, decodeCacheItem, encodeCacheItem } from '../utils';
+import type { Cache, CacheItem, CacheStore, GetCacheInfo, PutCacheInfo } from '../types';
 
 export class MemoryCache implements Cache {
     private cache: Record<string, CacheStore>;

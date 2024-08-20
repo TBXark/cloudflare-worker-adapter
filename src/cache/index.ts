@@ -2,7 +2,7 @@ import { LocalCache } from './local';
 import { SQLiteCache } from './sqlite';
 import { RedisCache } from './redis';
 import { MemoryCache } from './memory';
-import type { Cache } from './types/types';
+import type { Cache } from './types';
 
 export interface CacheOptions {
     uri: string;
@@ -21,8 +21,8 @@ export function createCache(type: string, options: CacheOptions): Cache {
     }
 }
 
-export * from './types/types';
-export * from './utils/cache';
+export * from './types';
+export * from './utils';
 export * from './local';
 export * from './memory';
 export * from './redis';

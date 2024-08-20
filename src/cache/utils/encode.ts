@@ -1,7 +1,7 @@
 import { Buffer } from 'node:buffer';
 import { ReadableStream } from 'node:stream/web';
 import { buffer } from 'node:stream/consumers';
-import type { CacheItem, CacheType, PutCacheInfo } from '../types/types';
+import type { CacheItem, CacheType, PutCacheInfo } from '../types';
 
 export function decodeCacheItem(value: string, type?: CacheType): CacheItem {
     switch (type) {
