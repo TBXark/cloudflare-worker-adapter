@@ -92,9 +92,6 @@ export default {
    * @param {function} handler 
    */
   startServerV2(port, host, env, setting, requestBuilder, handler) {
-    if (handler.constructor.name !== 'AsyncFunction') {
-      handler = handler(env);
-    }
     const server = http.createServer(async (req, res) => {
       console.log(`\x1b[31m${req.method}\x1b[0m: ${req.url}`);
       const baseURL = setting?.server || `http://${req.headers.host}`;
