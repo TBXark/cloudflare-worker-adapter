@@ -7,6 +7,14 @@ if (proxy) {
 }
 
 const cache = new SQLiteCache('./test/.temp/cache.sqlite');
+(async () => {
+    await cache.put('test', { data: 'test' });
+    console.log(await cache.get('test'));
+    console.log(await cache.list());
+    await cache.delete('test');
+    console.log(await cache.get('test'));
+    console.log(await cache.list());
+})();
 
 interface Config {
     port: number;

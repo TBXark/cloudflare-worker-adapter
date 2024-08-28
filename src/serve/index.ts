@@ -76,7 +76,7 @@ export function startServer(port: number = 3000, hostname: string = 'localhost',
     startServerV2(port, hostname, env, setting, defaultRequestBuilder, handler);
 }
 
-export function startServerV2(port: number = 3000, hostname: string = 'localhost', env: any, setting: ForwardSetting, requestBuilder: RequestBuilder = null, handler: ServerHandler) {
+export function startServerV2(port: number = 3000, hostname: string = 'localhost', env: any, setting: ForwardSetting, requestBuilder: RequestBuilder = defaultRequestBuilder, handler: ServerHandler) {
     const server = http.createServer(async (req, res) => {
         console.log(`\x1B[31m${req.method}\x1B[0m: ${req.url}`);
         const baseURL = setting.baseURL || `${setting.schema || 'http'}://${setting.host || req.headers.host || `${hostname}:${port}`}`;

@@ -1,7 +1,7 @@
 {
     "name": "cloudflare-worker-adapter",
     "type": "module",
-    "version": "1.3.0",
+    "version": "1.3.1",
     "author": "tbxark <tbxark@outlook.com>",
     "license": "MIT",
     "repository": "git@github.com:TBXark/cloudflare-worker-adapter.git",
@@ -62,7 +62,7 @@
         "https-proxy-agent": "^7.0.5",
         "ioredis": "^5.4.1",
         "node-fetch": "^3.3.2",
-        "sqlite3": "^5",
+        "sqlite3": "^5.1.7",
         "toml": "^3.0.0"
     },
     "devDependencies": {

@@ -24,7 +24,10 @@ export class RedisCache implements Cache {
             return null;
 
         const item: CacheStore = JSON.parse(result);
-        return decodeCacheItem(item.value, info?.type || item.info.type);
+        if (!item) {
+            return null;
+        }
+        return decodeCacheItem(item.value, info?.type || item.info?.type);
     }
 
     async put(key: string, value: CacheItem, info?: PutCacheInfo): Promise<void> {
@@ -35,9 +38,8 @@ export class RedisCache implements Cache {
             },
             value: await encodeCacheItem(value),
         };
-        if (info.expiration) {
-            const ttl = Math.floor((info.expiration - Date.now()) / 1000);
-            await this.redis.set(key, JSON.stringify(cacheStore), 'EX', ttl > 0 ? ttl : 0);
+        if (cacheStore.info.expiration) {
+            await this.redis.set(key, JSON.stringify(cacheStore), 'PX', cacheStore.info.expiration - Date.now());
         } else {
             await this.redis.set(key, JSON.stringify(cacheStore));
         }

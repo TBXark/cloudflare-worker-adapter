@@ -6,7 +6,8 @@
         "moduleResolution": "node",
         "declaration": true,
         "declarationDir": "dist",
-        "outDir": "dist"
+        "outDir": "dist",
+        "allowSyntheticDefaultImports": true
     },
     "include": ["src/**/*"],
     "exclude": ["node_modules", "dist"]
