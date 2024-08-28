@@ -20,9 +20,9 @@ export class RedisCache implements Cache {
 
     async get(key: string, info?: GetCacheInfo): Promise<CacheItem | null> {
         const result = await this.redis.get(key);
-        if (!result)
+        if (!result) {
             return null;
-
+        }
         const item: CacheStore = JSON.parse(result);
         if (!item) {
             return null;

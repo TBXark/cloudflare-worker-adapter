@@ -1,7 +1,7 @@
 {
     "name": "cloudflare-worker-adapter",
     "type": "module",
-    "version": "1.3.1",
+    "version": "1.3.2",
     "author": "tbxark <tbxark@outlook.com>",
     "license": "MIT",
     "repository": "git@github.com:TBXark/cloudflare-worker-adapter.git",
@@ -36,6 +36,11 @@
             "import": "./dist/cache/sqlite/index.js",
             "require": "./dist/cache/sqlite/index.cjs"
         },
+        "./cache/upstash": {
+            "types": "./dist/cache/upstash/index.d.ts",
+            "import": "./dist/cache/upstash/index.js",
+            "require": "./dist/cache/upstash/index.cjs"
+        },
         "./proxy": {
             "types": "./dist/proxy/index.d.ts",
             "import": "./dist/proxy/index.js",
@@ -59,6 +64,7 @@
         "build": "vite build"
     },
     "dependencies": {
+        "@upstash/redis": "^1.34.0",
         "https-proxy-agent": "^7.0.5",
         "ioredis": "^5.4.1",
         "node-fetch": "^3.3.2",
