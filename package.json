@@ -1,7 +1,7 @@
 {
     "name": "cloudflare-worker-adapter",
     "type": "module",
-    "version": "1.2.3",
+    "version": "1.3.2",
     "author": "tbxark <tbxark@outlook.com>",
     "license": "MIT",
     "repository": "git@github.com:TBXark/cloudflare-worker-adapter.git",
@@ -12,54 +12,49 @@
             "require": "./dist/index.cjs"
         },
         "./cache": {
-            "types": "./dist/cache.d.ts",
-            "import": "./dist/cache.js",
-            "require": "./dist/cache.cjs"
+            "types": "./dist/cache/index.d.ts",
+            "import": "./dist/cache/index.js",
+            "require": "./dist/cache/index.cjs"
         },
-        "./d1Cache": {
-            "types": "./dist/d1Cache.d.ts",
-            "import": "./dist/d1Cache.js",
-            "require": "./dist/d1Cache.cjs"
+        "./cache/local": {
+            "types": "./dist/cache/local/index.d.ts",
+            "import": "./dist/cache/local/index.js",
+            "require": "./dist/cache/local/index.cjs"
         },
-        "./localCache": {
-            "types": "./dist/localCache.d.ts",
-            "import": "./dist/localCache.js",
-            "require": "./dist/localCache.cjs"
+        "./cache/memory": {
+            "types": "./dist/cache/memory/index.d.ts",
+            "import": "./dist/cache/memory/index.js",
+            "require": "./dist/cache/memory/index.cjs"
         },
-        "./memoryCache": {
-            "types": "./dist/memoryCache.d.ts",
-            "import": "./dist/memoryCache.js",
-            "require": "./dist/memoryCache.cjs"
+        "./cache/redis": {
+            "types": "./dist/cache/redis/index.d.ts",
+            "import": "./dist/cache/redis/index.js",
+            "require": "./dist/cache/redis/index.cjs"
         },
-        "./redisCache": {
-            "types": "./dist/redisCache.d.ts",
-            "import": "./dist/redisCache.js",
-            "require": "./dist/redisCache.cjs"
+        "./cache/sqlite": {
+            "types": "./dist/cache/sqlite/index.d.ts",
+            "import": "./dist/cache/sqlite/index.js",
+            "require": "./dist/cache/sqlite/index.cjs"
         },
-        "./sqliteCache": {
-            "types": "./dist/sqliteCache.d.ts",
-            "import": "./dist/sqliteCache.js",
-            "require": "./dist/sqliteCache.cjs"
+        "./cache/upstash": {
+            "types": "./dist/cache/upstash/index.d.ts",
+            "import": "./dist/cache/upstash/index.js",
+            "require": "./dist/cache/upstash/index.cjs"
         },
-        "./cacheUtils": {
-            "types": "./dist/cacheUtils.d.ts",
-            "import": "./dist/cacheUtils.js",
-            "require": "./dist/cacheUtils.cjs"
-        },
-        "./fetchProxy": {
-            "types": "./dist/fetchProxy.d.ts",
-            "import": "./dist/fetchProxy.js",
-            "require": "./dist/fetchProxy.cjs"
+        "./proxy": {
+            "types": "./dist/proxy/index.d.ts",
+            "import": "./dist/proxy/index.js",
+            "require": "./dist/proxy/index.cjs"
         },
         "./serve": {
-            "types": "./dist/serve.d.ts",
-            "import": "./dist/serve.js",
-            "require": "./dist/serve.cjs"
+            "types": "./dist/serve/index.d.ts",
+            "import": "./dist/serve/index.js",
+            "require": "./dist/serve/index.cjs"
         }
     },
-    "main": "dist/index.cjs.js",
-    "module": "dist/index.js",
-    "types": "dist/index.d.ts",
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
     "files": [
         "dist"
     ],
@@ -69,23 +64,24 @@
         "build": "vite build"
     },
     "dependencies": {
+        "@upstash/redis": "^1.34.0",
         "https-proxy-agent": "^7.0.5",
         "ioredis": "^5.4.1",
         "node-fetch": "^3.3.2",
-        "sqlite3": "^5",
+        "sqlite3": "^5.1.7",
         "toml": "^3.0.0"
     },
     "devDependencies": {
-        "@antfu/eslint-config": "^2.25.1",
-        "@cloudflare/workers-types": "^4.20240815.0",
+        "@antfu/eslint-config": "^2.27.3",
+        "@cloudflare/workers-types": "^4.20240821.1",
         "@rollup/plugin-node-resolve": "^15.2.3",
-        "@types/node": "^22.4.1",
-        "eslint": "^9.8.0",
+        "@rollup/plugin-typescript": "^11.1.6",
+        "@types/node": "^22.5.0",
+        "eslint": "^9.9.1",
         "eslint-plugin-format": "^0.1.2",
         "rollup-plugin-node-externals": "^7.1.3",
-        "tsx": "^4.17.0",
+        "tsx": "^4.19.0",
         "typescript": "^5.5.4",
-        "vite": "^5.2.10",
-        "vite-plugin-dts": "^4.0.3"
+        "vite": "^5.4.2"
     }
 }

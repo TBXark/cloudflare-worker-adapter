@@ -28,7 +28,7 @@ export class SQLiteCache implements Cache {
             this.deleteStatement = this.db?.prepare(stmt.delete);
             this.listStatement = this.db?.prepare(stmt.list);
             this.listNoLimitStatement = this.db?.prepare(stmt.listNoLimit);
-            this.db?.run('PRAGMA journal_mode = WAL');
+            // this.db?.run('PRAGMA journal_mode = WAL');
             this.db?.run(`CREATE INDEX IF NOT EXISTS idx_${this.tableName}_key ON ${this.tableName}(key)`);
         });
     }
@@ -48,11 +48,10 @@ export class SQLiteCache implements Cache {
         }
 
         const expiration = row.expiration;
-        if (expiration && expiration < Date.now()) {
+        if (expiration !== -1 && expiration < Date.now()) {
             await this.delete(key);
             return null;
         }
-
         return decodeCacheItem(row.value, info?.type || row.type as CacheType);
     }
 
@@ -61,7 +60,7 @@ export class SQLiteCache implements Cache {
             key,
             value: await encodeCacheItem(value),
             type: cacheItemToType(value),
-            expiration: calculateExpiration(info),
+            expiration: calculateExpiration(info) ?? -1,
         };
 
         await new Promise<void>((resolve, reject) => {

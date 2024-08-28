@@ -1,60 +1,44 @@
 # cloudflare-worker-adapter
 
-由于国内糟糕的网络环境, 导致使用`wrangler dev`调试基本不太可能。使用cloudflare workers网页面板调试也比较复杂。所以这里提供一个简单的适配器，可以在本地调试。
+This is a simple Cloudflare Workers adapter that allows this project to run independently without the need for Cloudflare Worker. Currently supported features include:
 
-可以使用vscode断点调试，加上`--watch`可以实现热更新。
+- TOML configuration file parsing
+- Multiple KVNameSpace implementations
+- fetch with proxy functionality
 
-<img width="600" alt="image" src="https://user-images.githubusercontent.com/9513891/224906690-d9692649-ab5a-4c5a-98e2-49dc122d611a.png">
+## Installation
 
-
-### Usage
-
-```shell
-npm i cloudflare-worker-adapter
+```sh
+npm i cloudflare-worker-adapter --save
 ```
 
-### Example
+## Usage
 
-https://github.com/TBXark/ChatGPT-Telegram-Workers/tree/master/adapter/local
+```typescript
+const config: Config = {
+    port: 8787, // Port to listen on
+    hostname: '0.0.0.0', // Hostname to listen on
+    options: {
+        DATABASE: cache, // Cloudflare Workers bindings
+    },
+    config: './test/wrangler.toml', // Path to wrangler.toml
+    setting: {
+        baseURL: 'https://example.com', // Base URL for the worker fetch
+    },
+};
 
-```js
-import fs from 'node:fs';
-import * as process from 'node:process';
-import { createCache, startServer } from 'cloudflare-worker-adapter';
-import { installFetchProxy } from 'cloudflare-worker-adapter/fetchProxy';
-import worker from '../../main.js';
-import { ENV } from '../../src/config/env.js';
-
-const config = JSON.parse(fs.readFileSync('./config.json', 'utf-8'));
-const cache = await createCache(config?.database?.type, config?.database);
-console.log(`database: ${config?.database?.type} is ready`);
-
-const proxy = config?.https_proxy || process.env.HTTPS_PROXY || process.env.https_proxy || process.env.HTTP_PROXY || process.env.http_proxy;
-if (proxy) {
-    installFetchProxy(proxy);
+// Replace the following code with your own code
+async function workerFetch(req: Request) {
+    console.log('Request:', req.url);
+    return await fetch('https://api.github.com/users/tbxark');
 }
 
-try {
-    const buildInfo = JSON.parse(fs.readFileSync('../../dist/buildinfo.json', 'utf-8'));
-    ENV.BUILD_TIMESTAMP = buildInfo.timestamp;
-    ENV.BUILD_VERSION = buildInfo.sha;
-    console.log(buildInfo);
-} catch (e) {
-    console.log(e);
-}
-
-startServer(
-    config.port || 8787,
-    config.host || '0.0.0.0',
-    '../../wrangler.toml',
-    { DATABASE: cache },
-    { baseURL: config.server },
-    worker.fetch,
-);
+startServer(config.port, config.hostname, config.config, config.options, config.setting, workerFetch);
 ```
 
-### Best Practice
+## About
+This project is designed to provide a simple Cloudflare Worker runtime for the **ChatGPT-Telegram-Workers** project, and more Cloudflare Worker features may be added in the future. For more detailed usage, please refer to the [ChatGPT-Telegram-Workers](https://github.com/TBXark/ChatGPT-Telegram-Workers) project.
 
-如果你有在公网被调用的需求，使用内网穿透工具，将本地调试的端口映射到外网，这样就可以正常的交互了。
+## License
 
-这里只对KV进行了基本的实现，如果你的项目中遇到的没有实现的类或者方法。可以自行实现之后使用`bindGlobal`进行绑定。同时欢迎把你的实现提交到这个项目中。
+**cloudflare-worker-adapter** is released under the MIT license. [See LICENSE](LICENSE) for details.

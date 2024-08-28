@@ -59,13 +59,13 @@ export function defaultRequestBuilder(baseURL: string, req: http.IncomingMessage
     for (const [key, value] of Object.entries(req.headers)) {
         headers[key] = value;
     }
-    const init: RequestInit = {
+    const init: RequestInit & Record<string, any> = {
         method: req.method || 'GET',
-        headers,
+        headers: headers as any,
         body: null,
     };
     if (req.method !== 'GET' && req.method !== 'HEAD' && req.readable) {
-        init.body = Readable.from(req);
+        init.body = Readable.from(req) as any;
         init.duplex = 'half';
     }
     return new Request(url.toString(), init);
@@ -76,7 +76,7 @@ export function startServer(port: number = 3000, hostname: string = 'localhost',
     startServerV2(port, hostname, env, setting, defaultRequestBuilder, handler);
 }
 
-export function startServerV2(port: number = 3000, hostname: string = 'localhost', env: any, setting: ForwardSetting, requestBuilder: RequestBuilder = null, handler: ServerHandler) {
+export function startServerV2(port: number = 3000, hostname: string = 'localhost', env: any, setting: ForwardSetting, requestBuilder: RequestBuilder = defaultRequestBuilder, handler: ServerHandler) {
     const server = http.createServer(async (req, res) => {
         console.log(`\x1B[31m${req.method}\x1B[0m: ${req.url}`);
         const baseURL = setting.baseURL || `${setting.schema || 'http'}://${setting.host || req.headers.host || `${hostname}:${port}`}`;

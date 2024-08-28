@@ -31,6 +31,10 @@ export class D1Cache implements Cache {
         if (!item) {
             return null;
         }
+        if (item.expiration !== -1 && item.expiration < Date.now()) {
+            await this.delete(key);
+            return null;
+        }
         return decodeCacheItem(item.value, info?.type);
     }
 
@@ -39,7 +43,7 @@ export class D1Cache implements Cache {
             key,
             value: await encodeCacheItem(value),
             type: cacheItemToType(value),
-            expiration: calculateExpiration(info),
+            expiration: calculateExpiration(info) || -1,
         };
         await this.upsertStatement.bind(row.key, row.value, row.type, row.expiration, row.value, row.type, row.expiration).run();
     }
