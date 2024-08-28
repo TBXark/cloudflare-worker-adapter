@@ -1,3 +1,4 @@
+import type { SetCommandOptions } from '@upstash/redis';
 import { Redis } from '@upstash/redis';
 import { cacheItemToType, calculateExpiration, decodeCacheItem, encodeCacheItem } from '../utils';
 import type { Cache, CacheItem, CacheStore, GetCacheInfo, PutCacheInfo } from '../types';
@@ -33,9 +34,11 @@ export class UpStashRedis implements Cache {
             },
             value: await encodeCacheItem(value),
         };
-        await this.redis.set<CacheStore>(key, cacheStore, {
-            ex: cacheStore.info.expiration ? Math.floor((cacheStore.info.expiration - Date.now()) / 1000) : undefined,
-        });
+        const options: SetCommandOptions = {};
+        if (cacheStore.info.expiration) {
+            (options as any).ex = Math.floor(cacheStore.info.expiration / 1000);
+        }
+        await this.redis.set<CacheStore>(key, cacheStore, options);
     }
 
     async list(prefix?: string, limit?: number): Promise<string[]> {
