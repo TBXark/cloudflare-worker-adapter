@@ -1,7 +1,6 @@
-import * as process from 'node:process';
-import { SQLiteCache, installFetchProxy, startServer } from '../src';
+import { SQLiteCache, installFetchProxy, startServer, systemProxy } from '../src';
 
-const proxy = process.env.http_proxy || process.env.HTTP_PROXY || '';
+const proxy = systemProxy();
 if (proxy) {
     installFetchProxy(proxy);
 }
