@@ -59,14 +59,14 @@ export function defaultRequestBuilder(baseURL: string, req: http.IncomingMessage
     for (const [key, value] of Object.entries(req.headers)) {
         headers[key] = value;
     }
-    const init: RequestInit & Record<string, any> = {
+    const init: RequestInit = {
         method: req.method || 'GET',
         headers: headers as any,
         body: null,
     };
     if (req.method !== 'GET' && req.method !== 'HEAD' && req.readable) {
         init.body = Readable.from(req) as any;
-        init.duplex = 'half';
+        (init as any).duplex = 'half';
     }
     return new Request(url.toString(), init);
 }
