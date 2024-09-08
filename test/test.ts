@@ -1,10 +1,11 @@
-import * as process from 'node:process';
-import { SQLiteCache, installFetchProxy, startServer } from '../src';
+import { SQLiteCache, installFetchProxy, startServer, systemProxy } from '../src';
 
-const proxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY || '';
+const proxy = systemProxy();
 if (proxy) {
     installFetchProxy(proxy);
 }
+
+fetch('https://api.telegram.org/botxxx/getMe').then(res => res.json()).then(console.log).catch(console.error);
 
 const cache = new SQLiteCache('./test/.temp/cache.sqlite');
 (async () => {

@@ -1,13 +1,30 @@
-import type { URL } from 'node:url';
-import { HttpsProxyAgent } from 'https-proxy-agent';
-import type { RequestInfo, RequestInit } from 'node-fetch';
-import fetch from 'node-fetch';
+import * as process from 'node:process';
+import { ProxyAgent, setGlobalDispatcher } from 'undici';
 
 export function installFetchProxy(proxy: string) {
     if (proxy) {
-        const agent = new HttpsProxyAgent(proxy);
-        (globalThis as any).fetch = async (url: URL | RequestInfo, init: RequestInit) => {
-            return fetch(url, { agent, ...(init as any) });
-        };
+        setGlobalDispatcher(new ProxyAgent(proxy));
     }
+}
+
+export function systemProxy(): string | null {
+    if (process.env.http_proxy) {
+        return process.env.http_proxy;
+    }
+    if (process.env.HTTP_PROXY) {
+        return process.env.HTTP_PROXY;
+    }
+    if (process.env.https_proxy) {
+        return process.env.https_proxy;
+    }
+    if (process.env.HTTPS_PROXY) {
+        return process.env.HTTPS_PROXY;
+    }
+    if (process.env.all_proxy) {
+        return process.env.all_proxy;
+    }
+    if (process.env.ALL_PROXY) {
+        return process.env.ALL_PROXY;
+    }
+    return null;
 }
