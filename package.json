@@ -41,6 +41,11 @@
             "import": "./dist/cache/upstash/index.js",
             "require": "./dist/cache/upstash/index.cjs"
         },
+        "./cache/d1": {
+            "types": "./dist/cache/d1/index.d.ts",
+            "import": "./dist/cache/d1/index.js",
+            "require": "./dist/cache/d1/index.cjs"
+        },
         "./proxy": {
             "types": "./dist/proxy/index.d.ts",
             "import": "./dist/proxy/index.js",
