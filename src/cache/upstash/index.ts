@@ -36,7 +36,7 @@ export class UpStashRedis implements Cache {
         };
         const options: SetCommandOptions = {};
         if (cacheStore.info.expiration) {
-            (options as any).ex = Math.floor(cacheStore.info.expiration / 1000);
+            options.exat = Math.floor(cacheStore.info.expiration / 1000) as never;
         }
         await this.redis.set<CacheStore>(key, cacheStore, options);
     }
