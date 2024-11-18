@@ -28,3 +28,4 @@ export * from './memory';
 export * from './redis';
 export * from './sqlite';
 export * from './upstash';
+export * from './d1';
