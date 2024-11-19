@@ -57,7 +57,7 @@ export function calculateExpiration(info?: PutCacheInfo): number | null {
         return info.expiration;
     }
     if (info?.expirationTtl) {
-        return Date.now() + info.expirationTtl;
+        return Date.now() + info.expirationTtl * 1000;
     }
     return null;
 }
