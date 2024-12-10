@@ -1,5 +1,5 @@
-import { cacheItemToType, calculateExpiration, decodeCacheItem, encodeCacheItem } from '../utils';
 import type { Cache, CacheItem, CacheStore, GetCacheInfo, PutCacheInfo } from '../types';
+import { cacheItemToType, calculateExpiration, decodeCacheItem, encodeCacheItem, isExpired } from '../utils';
 
 export class MemoryCache implements Cache {
     private cache: Record<string, CacheStore>;
@@ -14,7 +14,7 @@ export class MemoryCache implements Cache {
             return null;
         }
 
-        if (item.info.expiration && item.info.expiration < Date.now()) {
+        if (isExpired(item.info?.expiration)) {
             await this.delete(key);
             return null;
         }
@@ -53,7 +53,7 @@ export class MemoryCache implements Cache {
     private trimCache() {
         for (const key in this.cache) {
             const item = this.cache[key];
-            if (item.info.expiration && item.info.expiration < Date.now()) {
+            if (isExpired(item.info?.expiration)) {
                 delete this.cache[key];
             }
         }

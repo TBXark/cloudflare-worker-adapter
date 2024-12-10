@@ -1,4 +1,4 @@
-import { SQLiteCache, installFetchProxy, startServer, systemProxy } from '../src';
+import { installFetchProxy, SQLiteCache, startServer, systemProxy } from '../src';
 
 const proxy = systemProxy();
 if (proxy) {

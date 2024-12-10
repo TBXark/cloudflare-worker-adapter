@@ -1,8 +1,8 @@
-import { LocalCache } from './local';
-import { SQLiteCache } from './sqlite';
-import { RedisCache } from './redis';
-import { MemoryCache } from './memory';
 import type { Cache } from './types';
+import { LocalCache } from './local';
+import { MemoryCache } from './memory';
+import { RedisCache } from './redis';
+import { SQLiteCache } from './sqlite';
 
 export interface CacheOptions {
     uri: string;
@@ -21,11 +21,11 @@ export function createCache(type: string, options: CacheOptions): Cache {
     }
 }
 
-export * from './types';
-export * from './utils';
+export * from './d1';
 export * from './local';
 export * from './memory';
 export * from './redis';
 export * from './sqlite';
+export * from './types';
 export * from './upstash';
-export * from './d1';
+export * from './utils';

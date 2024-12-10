@@ -1,7 +1,7 @@
 import type { RedisOptions } from 'ioredis';
+import type { Cache, CacheItem, CacheStore, GetCacheInfo, PutCacheInfo } from '../types';
 import { Redis } from 'ioredis';
 import { cacheItemToType, calculateExpiration, decodeCacheItem, encodeCacheItem } from '../utils';
-import type { Cache, CacheItem, CacheStore, GetCacheInfo, PutCacheInfo } from '../types';
 
 export class RedisCache implements Cache {
     private redis: Redis;
@@ -39,7 +39,8 @@ export class RedisCache implements Cache {
             value: await encodeCacheItem(value),
         };
         if (cacheStore.info.expiration) {
-            await this.redis.set(key, JSON.stringify(cacheStore), 'PX', cacheStore.info.expiration - Date.now());
+            const milliseconds = (cacheStore.info.expiration - Date.now() / 1000) * 1000;
+            await this.redis.set(key, JSON.stringify(cacheStore), 'PX', milliseconds);
         } else {
             await this.redis.set(key, JSON.stringify(cacheStore));
         }

@@ -1,7 +1,7 @@
 import type { SetCommandOptions } from '@upstash/redis';
+import type { Cache, CacheItem, CacheStore, GetCacheInfo, PutCacheInfo } from '../types';
 import { Redis } from '@upstash/redis';
 import { cacheItemToType, calculateExpiration, decodeCacheItem, encodeCacheItem } from '../utils';
-import type { Cache, CacheItem, CacheStore, GetCacheInfo, PutCacheInfo } from '../types';
 
 export class UpStashRedis implements Cache {
     private redis: Redis;
@@ -36,7 +36,7 @@ export class UpStashRedis implements Cache {
         };
         const options: SetCommandOptions = {};
         if (cacheStore.info.expiration) {
-            options.exat = Math.floor(cacheStore.info.expiration / 1000) as never;
+            options.exat = cacheStore.info.expiration as never;
         }
         await this.redis.set<CacheStore>(key, cacheStore, options);
     }

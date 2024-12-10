@@ -1,8 +1,8 @@
 import type { Database, Statement } from 'sqlite3';
-import sqlite3 from 'sqlite3';
-import { cacheItemToType, calculateExpiration, createSQLCacheStmt, decodeCacheItem, encodeCacheItem } from '../utils';
 import type { Cache, CacheItem, CacheType, GetCacheInfo, PutCacheInfo } from '../types';
 import type { SQLCacheRow } from '../utils';
+import sqlite3 from 'sqlite3';
+import { cacheItemToType, calculateExpiration, createSQLCacheStmt, decodeCacheItem, encodeCacheItem } from '../utils';
 
 export class SQLiteCache implements Cache {
     private db?: Database;

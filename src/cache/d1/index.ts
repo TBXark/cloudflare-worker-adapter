@@ -1,7 +1,7 @@
 import type { D1Database, D1PreparedStatement } from '@cloudflare/workers-types';
 import type { Cache, CacheItem, GetCacheInfo, PutCacheInfo } from '../types';
 import type { SQLCacheRow } from '../utils';
-import { cacheItemToType, calculateExpiration, createSQLCacheStmt, decodeCacheItem, encodeCacheItem } from '../utils';
+import { cacheItemToType, calculateExpiration, createSQLCacheStmt, decodeCacheItem, encodeCacheItem, isExpired } from '../utils';
 
 export class D1Cache implements Cache {
     private readonly store: D1Database;
@@ -31,7 +31,7 @@ export class D1Cache implements Cache {
         if (!item) {
             return null;
         }
-        if (item.expiration !== -1 && item.expiration < Date.now()) {
+        if (isExpired(item.expiration)) {
             await this.delete(key);
             return null;
         }

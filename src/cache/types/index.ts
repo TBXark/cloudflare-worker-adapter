@@ -13,8 +13,8 @@ export interface GetCacheInfo {
 }
 
 export interface PutCacheInfo {
-    expiration?: number;
-    expirationTtl?: number;
+    expiration?: number; // Timestamp in units of seconds
+    expirationTtl?: number; // Time to live in units of seconds
 }
 
 export interface CacheStore {

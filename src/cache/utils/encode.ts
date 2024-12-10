@@ -1,7 +1,7 @@
-import { Buffer } from 'node:buffer';
-import { ReadableStream } from 'node:stream/web';
-import { buffer } from 'node:stream/consumers';
 import type { CacheItem, CacheType, PutCacheInfo } from '../types';
+import { Buffer } from 'node:buffer';
+import { buffer } from 'node:stream/consumers';
+import { ReadableStream } from 'node:stream/web';
 
 export function decodeCacheItem(value: string, type?: CacheType): CacheItem {
     switch (type) {
@@ -52,12 +52,26 @@ export function cacheItemToType(value: CacheItem): CacheType {
     }
 }
 
+// expiration is the number that represents when to expire the key-value pair in seconds since epoch.
+// expirationTtl is the number that represents when to expire the key-value pair in seconds from now. The minimum value is 60
 export function calculateExpiration(info?: PutCacheInfo): number | null {
+    // Timestamp in units of seconds
     if (info?.expiration) {
         return info.expiration;
     }
+    // Time to live in units of seconds
     if (info?.expirationTtl) {
-        return Date.now() + info.expirationTtl * 1000;
+        return Math.floor(Date.now() / 1000) + info.expirationTtl;
     }
     return null;
+}
+
+export function isExpired(expiration: number | null): boolean {
+    if (!expiration) {
+        return false;
+    }
+    if (expiration < 0) {
+        return false;
+    }
+    return expiration < Math.floor(Date.now() / 1000);
 }
