@@ -1,7 +1,7 @@
 {
     "name": "cloudflare-worker-adapter",
     "type": "module",
-    "version": "1.3.6",
+    "version": "1.3.7",
     "author": "tbxark <tbxark@outlook.com>",
     "license": "MIT",
     "repository": "git@github.com:TBXark/cloudflare-worker-adapter.git",

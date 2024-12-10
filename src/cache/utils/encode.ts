@@ -57,11 +57,11 @@ export function cacheItemToType(value: CacheItem): CacheType {
 export function calculateExpiration(info?: PutCacheInfo): number | null {
     // Timestamp in units of seconds
     if (info?.expiration) {
-        return info.expiration;
+        return Math.floor(info.expiration);
     }
     // Time to live in units of seconds
     if (info?.expirationTtl) {
-        return Math.floor(Date.now() / 1000) + info.expirationTtl;
+        return Math.floor((Date.now() / 1000) + info.expirationTtl);
     }
     return null;
 }
