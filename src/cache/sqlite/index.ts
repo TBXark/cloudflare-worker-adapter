@@ -2,7 +2,7 @@ import type { Database, Statement } from 'sqlite3';
 import type { Cache, CacheItem, CacheType, GetCacheInfo, PutCacheInfo } from '../types';
 import type { SQLCacheRow } from '../utils';
 import sqlite3 from 'sqlite3';
-import { cacheItemToType, calculateExpiration, createSQLCacheStmt, decodeCacheItem, encodeCacheItem } from '../utils';
+import { cacheItemToType, calculateExpiration, createSQLCacheStmt, decodeCacheItem, encodeCacheItem, isExpired } from '../utils';
 
 export class SQLiteCache implements Cache {
     private db?: Database;
@@ -47,8 +47,7 @@ export class SQLiteCache implements Cache {
             return null;
         }
 
-        const expiration = row.expiration;
-        if (expiration !== -1 && expiration < Date.now()) {
+        if (isExpired(row.expiration)) {
             await this.delete(key);
             return null;
         }

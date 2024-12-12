@@ -12,7 +12,7 @@ console.log(`database: redis is ready`);
 
 (async () => {
     await cache.put('key', 'value', {
-        expiration: Date.now() + 1000 * 60 * 60 * 24,
+        expiration: Date.now() / 1000 + 60 * 60 * 24,
     });
     console.log(await cache.get('key'));
     await cache.delete('key');
