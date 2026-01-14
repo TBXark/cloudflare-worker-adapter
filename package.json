@@ -73,7 +73,7 @@
         "ioredis": "^5.4.1",
         "sqlite3": "^5.1.7",
         "toml": "^3.0.0",
-        "undici": "^7.5.0"
+        "undici": "^7.18.2"
     },
     "devDependencies": {
         "@antfu/eslint-config": "^3.11.2",
